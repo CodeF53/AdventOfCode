@@ -37,5 +37,6 @@ async function fetchInput(year: number, day: number): Promise<string> {
   if (resp.status !== 200)
     throw new Error(`Failed to get input data for ${year}/${day}`)
 
-  return await resp.text()
+  return (await resp.text())
+    .slice(0, -1) // remove trailing newline
 }

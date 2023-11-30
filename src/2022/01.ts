@@ -1,3 +1,4 @@
+// https://adventofcode.com/2022/day/1
 import _ from 'lodash'
 
 // returns how much calories you would get by eating the fattest elf
