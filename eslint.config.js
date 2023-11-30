@@ -10,5 +10,6 @@ export default await antfu({
     'no-console': 'off',
     'antfu/if-newline': 'off',
     'ts/unbound-method': 'off',
+    'no-new': 'off',
   },
 })
