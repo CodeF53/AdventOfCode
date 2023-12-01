@@ -12,7 +12,7 @@ export function partOne(input: string): number {
 
 const stringNums = ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine']
 export function partTwo(input: string): number {
-  // turn string nums into their numerical equivalents, surrounding numerical equivalent with self, as to not fuck up combos like "eightwo"
+  // turn string nums into their numerical equivalents, surrounding numerical equivalent with self, as to not fuck up combos like "fiveightwo"
   stringNums.forEach((num, i) => input = input.replaceAll(num, `${num}${(i + 1)}${num}`))
 
   return partOne(input)
