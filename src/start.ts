@@ -2,13 +2,14 @@ import './globals'
 import { exec } from 'node:child_process'
 import { writeFileSync } from 'node:fs'
 import prompts from 'prompts'
+import { DateTime } from 'luxon'
 import { getAbsolutePath, getInput, padDay } from './util'
 
-const date = new Date()
+const currentDateTime = DateTime.now().setZone('UTC-05')
 
 // #region get puzzle
-const currentYear = date.getFullYear()
-const isDecember = date.getMonth() === 11
+const currentYear = currentDateTime.year
+const isDecember = currentDateTime.month === 12
 const maxYear = currentYear - (isDecember ? 0 : 1)
 const { year } = (await prompts({
   type: 'number',
@@ -18,7 +19,7 @@ const { year } = (await prompts({
   validate: value => value <= maxYear && value >= 2015,
 })) as { year: number }
 
-const maxDay = year === currentYear ? date.getDate() : 25
+const maxDay = year === maxYear ? currentDateTime.day : 25
 const { day } = (await prompts({
   type: 'number',
   name: 'day',
