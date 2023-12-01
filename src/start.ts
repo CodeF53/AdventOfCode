@@ -1,6 +1,6 @@
 import './globals'
 import { exec } from 'node:child_process'
-import { writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, writeFileSync } from 'node:fs'
 import prompts from 'prompts'
 import { DateTime } from 'luxon'
 import { getAbsolutePath, getInput, padDay } from './util'
@@ -30,6 +30,7 @@ const { day } = (await prompts({
 // #endregion
 
 // check if the solution file exists
+const directoryPath = getAbsolutePath(`./${year}/`)
 const solutionPath = `${year}/${padDay(day)}`
 try {
   await import(`./${solutionPath}`)
@@ -45,6 +46,10 @@ catch (error) {
   if (!createFile)
     process.exit()
 
+  // ensure folder exists for file to go into
+  if (!existsSync(directoryPath))
+    mkdirSync(directoryPath)
+  // create template file
   writeFileSync(getAbsolutePath(`./${solutionPath}.ts`), `// https://adventofcode.com/${year}/day/${day}\n\n`
   + '//\nexport function partOne(input: string): number {\n  return -1\n}\n\n'
   + '//\nexport function partTwo(input: string): number {\n  return -1\n}\n')
