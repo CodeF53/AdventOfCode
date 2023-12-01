@@ -5,7 +5,7 @@ const year = Number(process.env.YEAR)
 const day = Number(process.env.DAY)
 if (!year || !day)
   throw new Error('do `npm start` instead of `npm run dev`')
-const input = await getInput(year, day)
+const input = await getInput(year, day) // ! I dislike getting input here, as it means we re-read it every reload, but I can't pass big inputs through process.env
 
 // run specified solution
 interface SolutionFunctions {
