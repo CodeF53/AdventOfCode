@@ -11,5 +11,6 @@ export default await antfu({
     'antfu/if-newline': 'off',
     'ts/unbound-method': 'off',
     'no-new': 'off',
+    'unused-imports/no-unused-vars': 'warn',
   },
 })

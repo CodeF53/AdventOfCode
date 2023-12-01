@@ -1,5 +1,4 @@
 // https://adventofcode.com/2022/day/2
-import _ from 'lodash'
 
 enum Move {
   Rock = 0,

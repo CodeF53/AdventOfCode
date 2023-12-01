@@ -1,5 +1,4 @@
 // https://adventofcode.com/2022/day/11
-import _ from 'lodash'
 
 let ultraWorried: boolean
 export function partOne(input: string): number {

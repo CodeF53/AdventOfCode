@@ -1,3 +1,4 @@
+import './globals'
 import { padDay } from './util'
 
 const year = Number(process.env.YEAR)

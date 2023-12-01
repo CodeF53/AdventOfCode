@@ -1,3 +1,4 @@
+import './globals'
 import { exec } from 'node:child_process'
 import { writeFileSync } from 'node:fs'
 import prompts from 'prompts'
@@ -43,8 +44,7 @@ catch (error) {
   if (!createFile)
     process.exit()
 
-  writeFileSync(getAbsolutePath(`./${solutionPath}.ts`), `// https://adventofcode.com/${year}/day/${day}\n`
-  + '// import _ from \'lodash\'\n\n'
+  writeFileSync(getAbsolutePath(`./${solutionPath}.ts`), `// https://adventofcode.com/${year}/day/${day}\n\n`
   + '//\nexport function partOne(input: string): number {\n  return -1\n}\n\n'
   + '//\nexport function partTwo(input: string): number {\n  return -1\n}\n')
 }

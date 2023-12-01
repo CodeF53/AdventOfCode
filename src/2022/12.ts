@@ -1,6 +1,4 @@
 // https://adventofcode.com/202 /day/
-// import _ from 'lodash'
-import _ from 'lodash'
 
 // The heightmap shows the local area from above broken into a grid of lowercase letters
 // - where a is the lowest elevation, z is highest

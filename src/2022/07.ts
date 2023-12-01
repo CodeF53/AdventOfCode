@@ -1,5 +1,4 @@
 // https://adventofcode.com/2022/day/7
-import _ from 'lodash'
 
 // find the total size of all directories with size less than 100000
 export function partOne(input: string): number {
