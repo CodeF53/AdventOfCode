@@ -9,11 +9,9 @@ import 'dotenv/config'
 // used for file names of solutions and inputs to ensure proper ordering
 export const padDay = (day: number): string => day.toString().padStart(2, '0')
 
-const __dirname = dirname(fileURLToPath(import.meta.url))
-
 export async function getInput(year: number, day: number): Promise<string> {
   // try to read input from cache
-  const cachePath = join(__dirname, `./${year}/${padDay(day)}.input`)
+  const cachePath = getAbsolutePath(`./${year}/${padDay(day)}.input`)
   if (existsSync(cachePath))
     return await readFile(cachePath, 'utf-8')
 
@@ -39,4 +37,9 @@ async function fetchInput(year: number, day: number): Promise<string> {
 
   return (await resp.text())
     .slice(0, -1) // remove trailing newline
+}
+
+export function getAbsolutePath(relativePath: string) {
+  const __dirname = dirname(fileURLToPath(import.meta.url))
+  return join(__dirname, relativePath)
 }

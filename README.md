@@ -4,18 +4,8 @@ My solutions for [Advent of Code](https://adventofcode.com).
 ## Usage
 Ensure you have `npm`, have ran `npm i`, and [have set up your AOC token](#advent-of-code-token)
 
-If it's currently December, you can run today's solution by simply doing
 ```
 npm start
-```
-If it's not December, the you must specify the solution you wish to run with the `year` and `day` arguments
-```
-npm start -- --year=YEAR --day=DAY --part=PART
-```
-
-If you only want to run your solution for a single part of the problem, do
-```
-npm start -- --part=1
 ```
 
 ## Advent Of Code Token

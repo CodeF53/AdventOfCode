@@ -2,26 +2,26 @@
   "type": "module",
   "main": "dist/index.js",
   "scripts": {
-    "start": "npm run build && node .",
-    "build": "tsc && ts-add-js-extension --dir=dist",
+    "start": "tsx src/start.ts",
+    "dev": "tsx watch src/index.ts",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
   },
   "dependencies": {
+    "cross-env": "^7.0.3",
     "dotenv": "^16.3.1",
     "lodash": "^4.17.21",
-    "yargs": "^17.7.2"
+    "prompts": "^2.4.2"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^2.1.1",
     "@types/lodash": "^4.14.202",
     "@types/node": "^20.10.0",
-    "@types/yargs": "^17.0.32",
+    "@types/prompts": "^2.4.9",
     "eslint": "^8.54.0",
     "lint-staged": "^15.1.0",
-    "rimraf": "^3.0.2",
     "simple-git-hooks": "^2.9.0",
-    "ts-add-js-extension": "^1.6.0",
+    "tsx": "^4.6.1",
     "typescript": "^5.3.2"
   },
   "simple-git-hooks": {

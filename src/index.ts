@@ -1,51 +1,19 @@
-import yargs from 'yargs/yargs'
-import { hideBin } from 'yargs/helpers'
-import { getInput, padDay } from './util.js'
+import { padDay } from './util'
 
-// #region Process arguments
-const currentDate = new Date()
-const isDecember = currentDate.getMonth() === 11
-const { year, day, part } = yargs(hideBin(process.argv)).options({
-  year: {
-    default: isDecember ? currentDate.getFullYear() : -1,
-    describe: 'AOC challenge year',
-    type: 'number',
-  },
-  day: {
-    default: isDecember ? currentDate.getDate() : -1,
-    describe: 'AOC challenge day',
-    type: 'number',
-  },
-  part: {
-    default: -1,
-    describe: 'AOC challenge part (-1 for all parts)',
-    type: 'number',
-  },
-}).argv as { year: number, day: number, part: number }
-
-// only allow implicit days in december
-if (day === -1 || year === -1)
-  throw new Error('Specify which solution to run with `npm start -- --year=20XX --day=XX`')
-// #endregion
+const year = Number(process.env.YEAR)
+const day = Number(process.env.DAY)
+const input = process.env.INPUT!
+if (!year || !day || !input)
+  throw new Error('do `npm start` instead of `npm run dev`')
 
 // run specified solution
 interface SolutionFunctions {
   partOne: (input: string) => unknown
   partTwo: (input: string) => unknown
 }
-
-const solutionPath = `${year}/${padDay(day)}`
-let solution
-try {
-  solution = (await import(`./${solutionPath}.js`)) as SolutionFunctions
-}
-catch (error) {
-  throw new Error(`No solution exists for ${year} ${day}, please create src/${solutionPath}.ts`)
-}
+const solution = (await import(`./${year}/${padDay(day)}`)) as SolutionFunctions
 
 const { partOne, partTwo } = solution
-
-const input = await getInput(year, day)
 
 function ppAndTime(func: (input: string) => unknown) {
   const start = performance.now()
@@ -56,15 +24,5 @@ function ppAndTime(func: (input: string) => unknown) {
   console.log(`Day ${day} ${func.name}: ${answer as any}\t${time}`)
 }
 
-switch (part) {
-  case 1:
-    ppAndTime(partOne)
-    break
-  case 2:
-    ppAndTime(partTwo)
-    break
-  default:
-    ppAndTime(partOne)
-    ppAndTime(partTwo)
-    break
-}
+ppAndTime(partOne)
+ppAndTime(partTwo)
