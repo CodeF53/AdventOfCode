@@ -1,11 +1,11 @@
 import './globals'
-import { padDay } from './util'
+import { getInput, padDay } from './util'
 
 const year = Number(process.env.YEAR)
 const day = Number(process.env.DAY)
-const input = process.env.INPUT!
-if (!year || !day || !input)
+if (!year || !day)
   throw new Error('do `npm start` instead of `npm run dev`')
+const input = await getInput(year, day)
 
 // run specified solution
 interface SolutionFunctions {

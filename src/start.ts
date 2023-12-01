@@ -3,7 +3,7 @@ import { exec } from 'node:child_process'
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs'
 import prompts from 'prompts'
 import { DateTime } from 'luxon'
-import { getAbsolutePath, getInput, padDay } from './util'
+import { getAbsolutePath, padDay } from './util'
 
 const currentDateTime = DateTime.now().setZone('UTC-05')
 
@@ -58,7 +58,6 @@ catch (error) {
 // Set environment variables
 process.env.YEAR = year.toString()
 process.env.DAY = day.toString()
-process.env.INPUT = await getInput(year, day)
 
 // Start tsx
 const dev = exec('npm run dev')
