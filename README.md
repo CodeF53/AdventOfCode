@@ -1,10 +1,14 @@
 # Advent Of Code Typescript
 My solutions for [Advent of Code](https://adventofcode.com).
 
+Repo designed to minimize time fucking around and get straight to code. See it in action:
+
+https://github.com/CodeF53/AdventOfCode/assets/37855219/a6a489bc-f61d-4ba8-9654-09005f2084d3
+
 ## Usage
 Ensure you have `npm`, have ran `npm i`, and [have set up your AOC token](#advent-of-code-token)
 
-```
+```bash
 npm start
 ```
 
@@ -14,6 +18,7 @@ npm start
 3. go to the "Network" tab of the devtools and refresh the page
 4. click the request that looks like "200 GET INPUT"
 5. click the "Cookies" tab of the request view, and copy the value of session
+
 ![an example of where you should be looking](./misc/advent_cookie_guide.webp)
 
 Once you have your token, create `.env` with your token, using `.env.example` for help with formatting.
