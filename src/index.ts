@@ -1,5 +1,5 @@
 import './globals'
-import { getInput, padDay } from './util'
+import { getInput, padDay } from './startUtil'
 
 const year = Number(process.env.YEAR)
 const day = Number(process.env.DAY)

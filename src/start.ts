@@ -3,7 +3,7 @@ import { exec } from 'node:child_process'
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs'
 import prompts from 'prompts'
 import { DateTime } from 'luxon'
-import { getAbsolutePath, padDay } from './util'
+import { getAbsolutePath, padDay } from './startUtil'
 
 const currentDateTime = DateTime.now().setZone('UTC-05')
 

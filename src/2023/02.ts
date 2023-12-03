@@ -1,4 +1,5 @@
 // https://adventofcode.com/2023/day/2
+import { arrayProduct } from '../utils'
 
 const colors = ['red', 'green', 'blue'] as const
 type Color = typeof colors[number]
@@ -46,5 +47,5 @@ export function partOne(input: string): number {
 export function partTwo(input: string): number {
   const games = processGames(input)
 
-  return _.sum(games.map(({ cubes }) => Object.values(cubes).reduce((a, b) => a * b, 1)))
+  return _.sum(games.map(({ cubes }) => arrayProduct(Object.values(cubes))))
 }

@@ -1,9 +1,5 @@
 // https://adventofcode.com/2023/day/3
-
-// The engineer explains that an engine part seems to be missing from the engine, but nobody can figure out which one.
-// If you can add up all the part numbers in the engine schematic, it should be easy to work out which part is missing.
-
-// any number adjacent to a symbol, even diagonally, is a "part number" and should be included in your sum. (Periods (.) do not count as a symbol.)
+import { arrayProduct } from '../utils'
 
 interface location {
   line: number
@@ -85,5 +81,5 @@ export function partTwo(input: string): number {
   const gears = cogContacts.filter(contacts => contacts.length === 2)
 
   // srdfgiofsdjoigfsdj
-  return _.sum(gears.map(gear => gear.map(part => Number(part.match)).reduce((a, b) => a * b, 1)))
+  return _.sum(gears.map(gear => arrayProduct(gear.map(part => Number(part.match)))))
 }
