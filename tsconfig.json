@@ -4,6 +4,7 @@
     "lib": ["esnext", "DOM"],
     "module": "ESNext",
     "moduleResolution": "Node",
+    "resolveJsonModule": true,
     "strict": true,
     "strictNullChecks": true,
     "inlineSourceMap": true,

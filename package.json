@@ -8,6 +8,7 @@
     "lint:fix": "eslint . --fix"
   },
   "dependencies": {
+    "cheerio": "^1.0.0-rc.12",
     "cross-env": "^7.0.3",
     "dotenv": "^16.3.1",
     "lodash": "^4.17.21",

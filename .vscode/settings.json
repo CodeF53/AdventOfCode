@@ -3,8 +3,7 @@
   "explorer.fileNesting.expand": false,
   "explorer.fileNesting.patterns": {
     "package.json": "tsconfig.*, eslint*, lint-staged*, package-lock.json",
-    "*.ts": "$(capture).input",
-    "*.js": "$(capture).input"
+    "*.ts": "$(capture).input, $(capture).ex.json"
   },
 
   // Enable the ESlint flat config support

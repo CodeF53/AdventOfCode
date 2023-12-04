@@ -4,6 +4,7 @@ import { existsSync, mkdirSync, writeFileSync } from 'node:fs'
 import prompts from 'prompts'
 import { DateTime } from 'luxon'
 import { getAbsolutePath, padDay } from './startUtil'
+import { saveExamples } from './aocDataUtils'
 
 const currentDateTime = DateTime.now().setZone('UTC-05')
 
@@ -54,6 +55,8 @@ catch (error) {
   + '//\nexport function partOne(input: string): number {\n  return -1\n}\n\n'
   + '//\nexport function partTwo(input: string): number {\n  return -1\n}\n')
 }
+// get examples for problem
+void await saveExamples(year, day)
 
 // Set environment variables
 process.env.YEAR = year.toString()
@@ -63,3 +66,5 @@ process.env.DAY = day.toString()
 const dev = exec('npm run dev')
 dev.stdout!.pipe(process.stdout)
 dev.stderr!.pipe(process.stderr)
+
+// TODO: key bind for submitting

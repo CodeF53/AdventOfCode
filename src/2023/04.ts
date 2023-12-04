@@ -37,7 +37,7 @@ export function partTwo(input: string): number {
     const winNumCount = cardWinningNumberCounts[i]
 
     for (let c = i + 1; c < Math.min(i + winNumCount + 1, cardWinningNumberCounts.length); c++)
-      cardCounts[c] += cardCounts[i] * 1
+      cardCounts[c] += cardCounts[i]
   }
 
   return _.sum(cardCounts)
