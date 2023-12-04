@@ -4,59 +4,73 @@ import { existsSync, mkdirSync, writeFileSync } from 'node:fs'
 import prompts from 'prompts'
 import { DateTime } from 'luxon'
 import { getAbsolutePath, padDay } from './startUtil'
-import { saveExamples } from './aocDataUtils'
+import { getInput, saveExamples } from './aocDataUtils'
 
 const currentDateTime = DateTime.now().setZone('UTC-05')
+const getSolutionNum: Record<string, () => Promise<{ year: number, day: number }>> = {
+  // ran by default
+  async ask() { // nice CLI interface for picking what day to run
+    const currentYear = currentDateTime.year
+    const isDecember = currentDateTime.month === 12
+    const maxYear = currentYear - (isDecember ? 0 : 1)
+    const { year } = (await prompts({
+      type: 'number',
+      name: 'year',
+      message: `Which year (${maxYear})?`,
+      initial: maxYear,
+      validate: value => value <= maxYear && value >= 2015,
+    })) as { year: number }
 
-// #region get puzzle
-const currentYear = currentDateTime.year
-const isDecember = currentDateTime.month === 12
-const maxYear = currentYear - (isDecember ? 0 : 1)
-const { year } = (await prompts({
-  type: 'number',
-  name: 'year',
-  message: `Which year (${maxYear})?`,
-  initial: maxYear,
-  validate: value => value <= maxYear && value >= 2015,
-})) as { year: number }
+    const maxDay = year === maxYear ? currentDateTime.day : 25
+    const { day } = (await prompts({
+      type: 'number',
+      name: 'day',
+      message: `Which day (${maxDay})?`,
+      initial: maxDay,
+      validate: value => value <= maxDay && value >= 1,
+    })) as { day: number }
 
-const maxDay = year === maxYear ? currentDateTime.day : 25
-const { day } = (await prompts({
-  type: 'number',
-  name: 'day',
-  message: `Which day (${maxDay})?`,
-  initial: maxDay,
-  validate: value => value <= maxDay && value >= 1,
-})) as { day: number }
-// #endregion
+    return { year, day }
+  },
+
+  async today() { // instantly resolves to today's date
+    const now = DateTime.now().setZone('UTC-05')
+    return { year: now.year, day: now.day }
+  },
+
+  async race() { // waits until tomorrow (as long as tomorrow is in 15 minutes)
+    // Calculate how long until next puzzle releases
+    const tomorrowStart = currentDateTime.plus({ days: 1 }).startOf('day')
+    const secondsUntilTomorrow = tomorrowStart.diff(currentDateTime, 'seconds').seconds + 1 // + 1 just to be safe and make sure puzzle is actually out
+
+    // if its in less than 15 minutes, wait for release
+    if (secondsUntilTomorrow <= 900)
+      await new Promise(r => setTimeout(r, secondsUntilTomorrow * 1000))
+
+    return await getSolutionNum.today()
+  },
+}
+const solutionNumGetter = getSolutionNum[process.argv[2]] || getSolutionNum.ask
+const { year, day } = await solutionNumGetter()
 
 // check if the solution file exists
 const directoryPath = getAbsolutePath(`./${year}/`)
-const solutionPath = `${year}/${padDay(day)}`
-try {
-  await import(`./${solutionPath}`)
+const solutionPath = getAbsolutePath(`./${year}/${padDay(day)}.ts`)
+const problemUrl = `https://adventofcode.com/${year}/day/${day}`
+// ensure folder exists for file to go into
+if (!existsSync(directoryPath)) mkdirSync(directoryPath)
+// create template solution if none exists
+if (!existsSync(solutionPath)) {
+  writeFileSync(solutionPath, `// ${problemUrl}\n\n`
+  + 'export function partOne(input: string): number {\n  return -1\n}\n\n'
+  + 'export function partTwo(input: string): number {\n  return -1\n}\n')
 }
-catch (error) {
-  const { createFile } = (await prompts({
-    type: 'confirm',
-    name: 'createFile',
-    message: `src/${solutionPath}.ts doesn't exist, do you want to create it?`,
-    initial: true,
-  })) as { createFile: boolean }
+// ! if you aren't using VSCode or WSL, you will want to change these
+exec(`code ${solutionPath}`) // open solution in vscode
+exec(`explorer.exe ${problemUrl}`) // open problem in default browser
 
-  if (!createFile)
-    process.exit()
-
-  // ensure folder exists for file to go into
-  if (!existsSync(directoryPath))
-    mkdirSync(directoryPath)
-  // create template file
-  writeFileSync(getAbsolutePath(`./${solutionPath}.ts`), `// https://adventofcode.com/${year}/day/${day}\n\n`
-  + '//\nexport function partOne(input: string): number {\n  return -1\n}\n\n'
-  + '//\nexport function partTwo(input: string): number {\n  return -1\n}\n')
-}
-// get examples for problem
-void await saveExamples(year, day)
+// get examples and input for problem
+void await Promise.all([saveExamples(year, day), getInput(year, day)])
 
 // Set environment variables
 process.env.YEAR = year.toString()
