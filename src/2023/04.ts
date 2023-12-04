@@ -6,8 +6,10 @@ interface Card {
 }
 
 function getCards(input: string): Card[] {
-  const fuck = input.split('\n').map(line => line.split(': ')[1].split('|').map(section => _.reject(section.split(' '), _.isEmpty).map(Number)))
-  return fuck.map(entry => ({ winningNums: entry[0], nums: entry[1] }))
+  // get cards, but in the format [[winNums, nums]]
+  const cardLikeArrays = input.split('\n').map(line => line.split(': ')[1].split(' | ').map(section => section.split(/ +/).map(Number)))
+  // turn into array of objects instead for better types & readability
+  return cardLikeArrays.map(entry => ({ winningNums: entry[0], nums: entry[1] }))
 }
 
 function getNumWinningNumbers({ winningNums, nums }: Card) {
