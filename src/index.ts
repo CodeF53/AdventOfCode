@@ -29,10 +29,12 @@ function ppAndTime(func: (input: string) => SolutionResult) {
   console.log(`\nDay ${day} ${func.name}:`)
 
   // test case
-  const testData = examples[func.name]!
-  const testAnswer = func(testData.input).toString()
-  const testCorrect = testAnswer === testData.output
-  console.log(` Test: ${testCorrect ? '✅' : `❌ expected ${testData.output} got`} ${testAnswer}`)
+  if (examples[func.name]) {
+    const testData = examples[func.name]!
+    const testAnswer = func(testData.input).toString()
+    const testCorrect = testAnswer === testData.output
+    console.log(` Test: ${testCorrect ? '✅' : `❌ expected ${testData.output} got`} ${testAnswer}`)
+  }
 
   // real answer w/ timings
   const start = performance.now()
