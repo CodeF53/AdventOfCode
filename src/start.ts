@@ -66,8 +66,10 @@ if (!existsSync(solutionPath)) {
   + 'export function partTwo(input: string): number {\n  return -1\n}\n')
 }
 // ! if you aren't using VSCode or WSL, you will want to change these
-exec(`code ${solutionPath}`) // open solution in vscode
-exec(`explorer.exe ${problemUrl}`) // open problem in default browser
+if (process.argv[2] === 'race') {
+  exec(`code ${solutionPath}`) // open solution in vscode
+  exec(`explorer.exe ${problemUrl}`) // open problem in default browser
+}
 
 // get examples and input for problem
 void await Promise.all([saveExamples(year, day), getInput(year, day)])
