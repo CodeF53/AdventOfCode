@@ -1,15 +1,20 @@
 // https://adventofcode.com/2023/day/6
 import { arrayProduct } from '../utils'
 
-function getWinningHoldTimes(raceTime: number, recordDistance: number) {
+interface RaceData {
+  time: number
+  distance: number
+}
+
+function getWinningHoldTimes(raceData: RaceData): number[] {
   const winningHoldTimes: number[] = []
 
-  for (let timeHeld = 1; timeHeld < raceTime; timeHeld++) {
+  for (let timeHeld = 1; timeHeld < raceData.time; timeHeld++) {
     const velocity = timeHeld
-    const timeRemaining = raceTime - timeHeld
+    const timeRemaining = raceData.time - timeHeld
     const distance = velocity * timeRemaining
 
-    if (distance > recordDistance)
+    if (distance > raceData.distance)
       winningHoldTimes.push(timeHeld)
   }
 
@@ -17,13 +22,11 @@ function getWinningHoldTimes(raceTime: number, recordDistance: number) {
 }
 
 export function partOne(input: string): number {
-  const fuck = _.zip(...input.split('\n').map(line => line.split(/: +/)[1].split(/ +/).map(Number))).map(([time, dist]) => ({ time, dist }))
-  const sdfiogsdf = fuck.map(({ time, dist }) => getWinningHoldTimes(time!, dist!).length)
-  return arrayProduct(sdfiogsdf)
+  const raceDatas: RaceData[] = _.zip(...input.split('\n').map(line => line.split(/: +/)[1].split(/ +/).map(Number))).map(([time, distance]) => ({ time: time!, distance: distance! }))
+  return arrayProduct(raceDatas.map(raceData => getWinningHoldTimes(raceData).length))
 }
 
 export function partTwo(input: string): number {
-  const fuck = input.split('\n').map(line => Number(line.split(/: +/)[1].replaceAll(' ', '')))
-
-  return getWinningHoldTimes(fuck[0], fuck[1]).length
+  const [time, distance] = input.split('\n').map(line => Number(line.split(/: +/)[1].replaceAll(' ', '')))
+  return getWinningHoldTimes({ time, distance }).length
 }
