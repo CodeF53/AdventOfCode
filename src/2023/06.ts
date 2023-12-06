@@ -21,12 +21,16 @@ function getWinningHoldTimes(raceData: RaceData): number[] {
   return winningHoldTimes
 }
 
+function partialParseInput<T>(input: string, mapFn: (value: string) => T): T[] {
+  return input.split('\n').map(line => mapFn(line.split(/: +/)[1]))
+}
+
 export function partOne(input: string): number {
-  const raceDatas: RaceData[] = _.zip(...input.split('\n').map(line => line.split(/: +/)[1].split(/ +/).map(Number))).map(([time, distance]) => ({ time: time!, distance: distance! }))
-  return arrayProduct(raceDatas.map(raceData => getWinningHoldTimes(raceData).length))
+  const raceDatas = _.zip(...partialParseInput(input, line => line.split(/ +/).map(Number))) as [[number, number]]
+  return arrayProduct(raceDatas.map(([time, distance]) => getWinningHoldTimes({ time, distance }).length))
 }
 
 export function partTwo(input: string): number {
-  const [time, distance] = input.split('\n').map(line => Number(line.split(/: +/)[1].replaceAll(' ', '')))
+  const [time, distance] = partialParseInput(input, line => Number(line.replaceAll(' ', '')))
   return getWinningHoldTimes({ time, distance }).length
 }
