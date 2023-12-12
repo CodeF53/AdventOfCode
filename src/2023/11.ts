@@ -69,19 +69,18 @@ function getSpaceExpansions(grid: Grid): Expansions {
   return { horizontalExpansions: getHorizontalExpansions(grid), verticalExpansions: getVerticalExpansions(grid) }
 }
 
-function distanceP2(galaxyA: GalaxyCoords, galaxyB: GalaxyCoords, expansions: Expansions) {
-  let numEncounteredExpansions = 0
-  expansions.horizontalExpansions.forEach((x) => {
-    if (Math.min(galaxyA.x, galaxyB.x) < x && x < Math.max(galaxyA.x, galaxyB.x))
-      numEncounteredExpansions++
-  })
-  expansions.verticalExpansions.forEach((y) => {
-    if (Math.min(galaxyA.y, galaxyB.y) < y && y < Math.max(galaxyA.y, galaxyB.y))
-      numEncounteredExpansions++
-  })
+function between(a: number, b: number, x: number): boolean {
+  return Math.min(a, b) < x && x < Math.max(a, b)
+}
 
-  return Math.abs(galaxyA.x - galaxyB.x)
-    + Math.abs(galaxyA.y - galaxyB.y) + numEncounteredExpansions * (1000000 - 1)
+function distanceP2(galaxyA: GalaxyCoords, galaxyB: GalaxyCoords, expansions: Expansions) {
+  const getEncounteredExpansions = (axis: ('x' | 'y'), expansions: number[]) => {
+    return expansions.filter(coord => between(galaxyA[axis], galaxyB[axis], coord)).length
+  }
+  const encounteredExpansions = getEncounteredExpansions('x', expansions.horizontalExpansions)
+    + getEncounteredExpansions('y', expansions.verticalExpansions)
+
+  return Math.abs(galaxyA.x - galaxyB.x) + Math.abs(galaxyA.y - galaxyB.y) + (encounteredExpansions * (1000000 - 1))
 }
 
 export function partTwo(input: string): number {
