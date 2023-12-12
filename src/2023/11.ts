@@ -1,53 +1,18 @@
 // https://adventofcode.com/2023/day/11
 type Grid = string[][]
-interface GalaxyCoords { x: number, y: number }
+interface Coords { x: number, y: number }
 
-function expandSpaceVert(grid: Grid): Grid {
-  const gridA = _.cloneDeep(grid)
-  let clonedLines = 0
-  grid.forEach((line, i) => {
-    if (line.every(pixel => pixel === '.')) {
-      gridA.splice(i + clonedLines, 0, line)
-      clonedLines++
-    }
-  })
-  return gridA
+interface Expansions {
+  horzExpansions: number[]
+  vertExpansions: number[]
 }
 
-function expandSpaceHorz(grid: Grid): Grid {
-  return _.zip(...expandSpaceVert(_.zip(...grid) as Grid)) as Grid
-}
-
-function expandSpace(grid: Grid): Grid {
-  return expandSpaceHorz(expandSpaceVert(grid))
-}
-
-function distance(galaxyA: GalaxyCoords, galaxyB: GalaxyCoords) {
-  return Math.abs(galaxyA.x - galaxyB.x)
-    + Math.abs(galaxyA.y - galaxyB.y)
-}
-
-function getGalaxies(grid: Grid): GalaxyCoords[] {
+function getGalaxies(grid: Grid): Coords[] {
   return grid.flatMap((line, y) => line.map((pixel, x) => pixel === '#' ? { x, y } : undefined))
-    .filter(pixel => pixel !== undefined) as GalaxyCoords[]
+    .filter(pixel => pixel !== undefined) as Coords[]
 }
 
-export function partOne(input: string): number {
-  const grid = expandSpace(input.split('\n').map(line => line.split('')))
-
-  const galaxies = getGalaxies(grid)
-  const distances: number[] = []
-  galaxies.forEach((galaxy, r) => {
-    galaxies.forEach((galaxyB, c) => {
-      if (r < c)
-        distances.push(distance(galaxy, galaxyB))
-    })
-  })
-
-  return _.sum(distances)
-}
-
-function getVerticalExpansions(grid: Grid): number[] {
+function getVertExpansions(grid: Grid): number[] {
   const expansionPoints: number[] = []
   grid.forEach((line, i) => {
     if (line.every(pixel => pixel === '.'))
@@ -56,45 +21,43 @@ function getVerticalExpansions(grid: Grid): number[] {
   return expansionPoints
 }
 
-interface Expansions {
-  horizontalExpansions: number[]
-  verticalExpansions: number[]
+function getHorzExpansions(grid: Grid): number[] {
+  // pivot grid 90 degrees then check using vertical code
+  return getVertExpansions(_.zip(...grid) as Grid)
 }
 
-function getHorizontalExpansions(grid: Grid): number[] {
-  return getVerticalExpansions(_.zip(...grid) as Grid)
+function getExpansions(grid: Grid): Expansions {
+  return { horzExpansions: getHorzExpansions(grid), vertExpansions: getVertExpansions(grid) }
 }
 
-function getSpaceExpansions(grid: Grid): Expansions {
-  return { horizontalExpansions: getHorizontalExpansions(grid), verticalExpansions: getVerticalExpansions(grid) }
-}
-
-function between(a: number, b: number, x: number): boolean {
+function between(a: number, b: number, x: number) {
   return Math.min(a, b) < x && x < Math.max(a, b)
 }
-
-function distanceP2(galaxyA: GalaxyCoords, galaxyB: GalaxyCoords, expansions: Expansions) {
+function distance(galaxyA: Coords, galaxyB: Coords, expansions: Expansions, expansionDistance: number) {
   const getEncounteredExpansions = (axis: ('x' | 'y'), expansions: number[]) => {
     return expansions.filter(coord => between(galaxyA[axis], galaxyB[axis], coord)).length
   }
-  const encounteredExpansions = getEncounteredExpansions('x', expansions.horizontalExpansions)
-    + getEncounteredExpansions('y', expansions.verticalExpansions)
+  const encounteredExpansions = getEncounteredExpansions('x', expansions.horzExpansions)
+    + getEncounteredExpansions('y', expansions.vertExpansions)
 
-  return Math.abs(galaxyA.x - galaxyB.x) + Math.abs(galaxyA.y - galaxyB.y) + (encounteredExpansions * (1000000 - 1))
+  return Math.abs(galaxyA.x - galaxyB.x) + Math.abs(galaxyA.y - galaxyB.y) + (encounteredExpansions * (expansionDistance))
 }
 
-export function partTwo(input: string): number {
+export function partOne(input: string, expansionDistance = 1): number {
   const grid = input.split('\n').map(line => line.split(''))
-  const expansions = getSpaceExpansions(grid)
+  const expansions = getExpansions(grid)
+  const galaxies = getGalaxies(grid)
 
-  const galaxies = _.reject(grid.flatMap((line, y) => line.map((pixel, x) => pixel === '#' ? { x, y } : undefined)), _.isUndefined) as GalaxyCoords[]
   const distances: number[] = []
   galaxies.forEach((galaxy, r) => {
     galaxies.forEach((galaxyB, c) => {
-      if (r < c)
-        distances.push(distanceP2(galaxy, galaxyB, expansions))
+      if (r < c) distances.push(distance(galaxy, galaxyB, expansions, expansionDistance))
     })
   })
 
   return _.sum(distances)
+}
+
+export function partTwo(input: string): number {
+  return partOne(input, 1000000 - 1)
 }
