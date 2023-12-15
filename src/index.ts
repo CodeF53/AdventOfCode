@@ -37,11 +37,11 @@ async function ppAndTime(func: (input: string) => SolutionResult) {
   }
 
   // real answer w/ timings
-  // const start = performance.now()
-  // const answer = await func(input)
-  // const end = performance.now()
-  // const time = `${(end - start).toFixed(3)}ms`
-  // console.log(` Real: ${answer.toString()}\t${time}`)
+  const start = performance.now()
+  const answer = await func(input)
+  const end = performance.now()
+  const time = `${(end - start).toFixed(3)}ms`
+  console.log(` Real: ${answer.toString()}\t${time}`)
 }
 
 await ppAndTime(partOne)
