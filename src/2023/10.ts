@@ -1,6 +1,5 @@
 // https://adventofcode.com/2023/day/10
 let tileGrid: string[][]
-let distGrid: number[][]
 
 const directions = ['n', 's', 'e', 'w'] as const
 type Direction = typeof directions[number]
@@ -42,59 +41,66 @@ function getTile(pos: Pos): Tile | undefined {
   return tiles[tileGrid[pos.y][pos.x]]
 }
 
-function exploreConnections(pos: Pos) {
-  const toExplore = [pos]
+function getConnection(posA: Pos, tileA: Tile, direction: Direction, backTrackDir?: Direction): { newPos: Pos, newBTD: Direction } | undefined {
+  // prevent backtracking
+  if (backTrackDir && direction === backTrackDir) return
+  // check next tile in direction is a pipe
+  const posB = offsetPos(posA, direction)
+  const tileB = getTile(posB)
+  if (!tileB) return
+  // and is connected to current pipe
+  const inverseDirection = getInverseDir(direction)
+  if (!tileA[direction] || !tileB[inverseDirection]) return
 
-  while (toExplore.length > 0) {
-    const currentPos = toExplore.shift()!
-    const connectionDistance = distGrid[currentPos.y][currentPos.x] + 1
-    const currentTile = getTile(currentPos)
-
-    if (!currentTile) continue
-
-    directions.forEach((direction) => {
-      const posB = offsetPos(currentPos, direction)
-      const tileB = getTile(posB)
-
-      if (!tileB) return
-
-      const inverseDirection = getInverseDir(direction)
-
-      if (!currentTile[direction] || !tileB[inverseDirection]) return
-
-      const oldDist = distGrid[posB.y][posB.x]
-
-      if (oldDist !== -1 && connectionDistance >= oldDist) return
-
-      distGrid[posB.y][posB.x] = connectionDistance
-      toExplore.push(posB)
-    })
-  }
+  return { newPos: posB, newBTD: inverseDirection }
 }
 
-function previewGrid(grid: (number | string)[][], commas = false, size = 3) {
-  console.log(grid.map(line => line.map(
-    num => num.toString().replace('-1', '').padStart(size, ' '),
-  ).join(commas ? ',' : '')).join('\n'))
+function explorePipe(endPos: Pos, startPos: Pos, startBackTrackDir: Direction): Set<Pos> | undefined {
+  let currentPos = startPos
+  let backTrackDir = startBackTrackDir
+  const visitedPositions = new Set<Pos>()
+
+  while (currentPos.x !== endPos.x || currentPos.y !== endPos.y) {
+    const currentTile: Tile = getTile(currentPos)!
+    if (!currentTile) return
+    let foundValidDirection = false
+
+    for (const direction of directions) {
+      const connectionInfo = getConnection(currentPos, currentTile, direction, backTrackDir)
+      if (!connectionInfo) continue
+      currentPos = connectionInfo.newPos
+      backTrackDir = connectionInfo.newBTD
+      foundValidDirection = true
+      visitedPositions.add(currentPos)
+      break
+    }
+    if (!foundValidDirection) return
+  }
+  visitedPositions.add(endPos)
+  return visitedPositions
+}
+
+function getPipePositions(startPos: Pos): Set<Pos> {
+  for (const direction of directions) {
+    const positions = explorePipe(startPos, offsetPos(startPos, direction), getInverseDir(direction))
+    if (positions) return positions
+  }
+  return new Set<Pos>()
+}
+
+function procInput(input: string) {
+  tileGrid = input.split('\n').map(line => line.split(''))
+  return tileGrid.map((line, i) => ({ x: line.indexOf('S'), y: i })).filter(({ x }) => x !== -1).at(0)!
 }
 
 export function partOne(input: string): number {
-  tileGrid = input.split('\n').map(line => line.split(''))
-  distGrid = Array.from({ length: tileGrid[0].length }, () => Array(tileGrid.length).fill(-1) as number[])
+  const sPos = procInput(input)
 
-  // get position of animal
-  const sPos = tileGrid.map((line, i) => ({ x: line.indexOf('S'), y: i })).filter(({ x }) => x !== -1).at(0)!
-  distGrid[sPos.y][sPos.x] = 0
-  console.log(sPos)
-  // explore grid
-  exploreConnections(sPos)
-
-  previewGrid(tileGrid, false, 2)
-  previewGrid(distGrid, true, 1)
-
-  return _.max(distGrid.map(_.max))!
+  return (getPipePositions(sPos).size) / 2
 }
 
 export function partTwo(input: string): number {
+  const sPos = procInput(input)
+
   return -1
 }
