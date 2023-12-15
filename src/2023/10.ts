@@ -1,4 +1,11 @@
 // https://adventofcode.com/2023/day/10
+import { availableParallelism } from 'node:os'
+import _ from 'lodash'
+import { concurrent } from '@bitair/concurrent.js'
+
+concurrent.config({ maxThreads: availableParallelism() })
+const concurrentThis = concurrent.import(import.meta.url)
+
 let tileGrid: string[][]
 
 const directions = ['n', 's', 'e', 'w'] as const
@@ -59,6 +66,7 @@ function explorePipe(endPos: Pos, startPos: Pos, startBackTrackDir: Direction): 
   let currentPos = startPos
   let backTrackDir = startBackTrackDir
   const visitedPositions = new Set<Pos>()
+  visitedPositions.add(currentPos)
 
   while (currentPos.x !== endPos.x || currentPos.y !== endPos.y) {
     const currentTile: Tile = getTile(currentPos)!
@@ -76,15 +84,18 @@ function explorePipe(endPos: Pos, startPos: Pos, startBackTrackDir: Direction): 
     }
     if (!foundValidDirection) return
   }
-  visitedPositions.add(endPos)
   return visitedPositions
 }
 
-function getPipePositions(startPos: Pos): Set<Pos> {
+function getLoopPositions(startPos: Pos): Set<Pos> {
+  const paths = []
   for (const direction of directions) {
     const positions = explorePipe(startPos, offsetPos(startPos, direction), getInverseDir(direction))
-    if (positions) return positions
+    if (positions) paths.push(positions)
   }
+  if (paths.length > 0)
+    return _.maxBy(paths, _.size)!
+
   return new Set<Pos>()
 }
 
@@ -96,11 +107,44 @@ function procInput(input: string) {
 export function partOne(input: string): number {
   const sPos = procInput(input)
 
-  return (getPipePositions(sPos).size) / 2
+  return (getLoopPositions(sPos).size) / 2
 }
 
-export function partTwo(input: string): number {
-  const sPos = procInput(input)
+function includes(collection: any, targetObject: any) {
+  return _.some(collection, item => _.isEqual(item, targetObject))
+}
 
-  return -1
+export function countRowEnclosed(tileGrid_: string[][], y: number, loopPositions: Pos[]): number {
+  tileGrid = tileGrid_
+  let c = 0
+  let up = false
+  for (let x = 0; x < tileGrid[y].length; x++) {
+    const pos = { x, y }
+    const tile = getTile(pos)
+    const inLoop = tile && includes(loopPositions, pos)
+    if (inLoop && tile.s)
+      up = !up
+    if (up && !inLoop)
+      c++
+  }
+  return c
+}
+
+export async function partTwo(input: string): number {
+  const sPos = procInput(input)
+  const loopPositions = [...getLoopPositions(sPos)]
+  // turn S into whatever pipe it actually is
+  const d: Tile = { }
+  for (const direction of directions)
+    if (includes([loopPositions.at(0), loopPositions.at(-2)], offsetPos(sPos, direction))) d[direction] = true
+  tileGrid[sPos.y][sPos.x] = _.findKey(tiles, tile => _.isEqual(d, tile))!
+
+  // count number of enclosed pipes (multithreaded because I can't figure out how to optimise)
+  const tasks = []
+  for (let y = 0; y < tileGrid.length; y++) {
+    const countRowEnclosedParallel = (await concurrentThis.load()).countRowEnclosed as typeof countRowEnclosed
+    tasks.push(countRowEnclosedParallel(tileGrid, y, loopPositions))
+  }
+
+  return _.sum(await Promise.all(tasks))
 }
