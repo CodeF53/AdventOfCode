@@ -1,10 +1,6 @@
 // https://adventofcode.com/2023/day/16
-import { availableParallelism } from 'node:os'
-import { concurrent } from '@bitair/concurrent.js'
 import _ from 'lodash'
-
-concurrent.config({ maxThreads: availableParallelism() })
-const concurrentThis = concurrent.import(import.meta.url)
+import { asThreaded } from '../utils'
 
 interface Pos {
   x: number
@@ -100,14 +96,10 @@ export function partOne(input: string, startPos: Pos = { x: 0, y: 0 }, startDir:
   return countVisited()
 }
 
-// creates a new thread and calls partOne in it, returns Promise of it's return
-async function partOneAsync(input: string, startPos: Pos, startDir: Direction): Promise<number> {
-  return ((await concurrentThis.load()).partOne as typeof partOne)(input, startPos, startDir)
-}
-
 export async function partTwo(input: string): Promise<number> {
   const height = input.split('\n').length
   const width = input.split('\n')[0].length
+  const partOneAsync = asThreaded(partOne, import.meta.url)
   const out = _.max(await Promise.all([
     ..._.times(width, x => partOneAsync(input, { x, y: 0 }, 's')),
     ..._.times(width, x => partOneAsync(input, { x, y: height - 1 }, 'n')),

@@ -1,10 +1,6 @@
 // https://adventofcode.com/2023/day/12
-import { availableParallelism } from 'node:os'
 import _ from 'lodash'
-import { concurrent } from '@bitair/concurrent.js'
-
-concurrent.config({ maxThreads: availableParallelism() })
-const concurrentThis = concurrent.import(import.meta.url)
+import { asThreaded } from '../utils'
 
 function isValid(springs: string[], damagedGroups: number[]): boolean {
   const givenDamagedGroups = _.reject(springs.join('').split(/\.+/), _.isEmpty).map(damagedGroup => damagedGroup.length)
@@ -37,10 +33,9 @@ export function solveEntry(entry: string): number {
 
 export async function partOne(input: string): Promise<number> {
   const tasks = []
-  for (const entry of input.split('\n')) {
-    const solveEntryParallel = (await concurrentThis.load()).solveEntry as typeof solveEntry
+  const solveEntryParallel = asThreaded(solveEntry, import.meta.url)
+  for (const entry of input.split('\n'))
     tasks.push(solveEntryParallel(entry))
-  }
 
   return _.sum(await Promise.all(tasks))
 }

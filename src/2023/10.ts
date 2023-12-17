@@ -1,10 +1,6 @@
 // https://adventofcode.com/2023/day/10
-import { availableParallelism } from 'node:os'
 import _ from 'lodash'
-import { concurrent } from '@bitair/concurrent.js'
-
-concurrent.config({ maxThreads: availableParallelism() })
-const concurrentThis = concurrent.import(import.meta.url)
+import { asThreaded } from '../utils'
 
 let tileGrid: string[][]
 
@@ -130,7 +126,7 @@ export function countRowEnclosed(tileGrid_: string[][], y: number, loopPositions
   return c
 }
 
-export async function partTwo(input: string): number {
+export async function partTwo(input: string): Promise<number> {
   const sPos = procInput(input)
   const loopPositions = [...getLoopPositions(sPos)]
   // turn S into whatever pipe it actually is
@@ -141,10 +137,9 @@ export async function partTwo(input: string): number {
 
   // count number of enclosed pipes (multithreaded because I can't figure out how to optimise)
   const tasks = []
-  for (let y = 0; y < tileGrid.length; y++) {
-    const countRowEnclosedParallel = (await concurrentThis.load()).countRowEnclosed as typeof countRowEnclosed
+  const countRowEnclosedParallel = asThreaded(countRowEnclosed, import.meta.url)
+  for (let y = 0; y < tileGrid.length; y++)
     tasks.push(countRowEnclosedParallel(tileGrid, y, loopPositions))
-  }
 
   return _.sum(await Promise.all(tasks))
 }
