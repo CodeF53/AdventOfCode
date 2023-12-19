@@ -1,9 +1,6 @@
 // https://adventofcode.com/2023/day/18
+import { getArea } from '../utils'
 
-interface Pos {
-  x: number
-  y: number
-}
 const directions = ['U', 'D', 'R', 'L'] as const
 type Direction = typeof directions[number]
 function offsetPos(origin: Pos, dir: Direction, amount: number): Pos {
@@ -58,25 +55,9 @@ function createPath(input: string, hexInstructions: boolean = false): Pos[] {
   return path
 }
 
-// https://cp-algorithms.com/geometry/area-of-simple-polygon.html
-function getHoleSize(path: Pos[]): number {
-  let res = 0
-
-  for (let i = 0; i < path.length; i++) {
-    const p = i > 0 ? path[i - 1] : path[path.length - 1]
-    const q = path[i]
-    // area from the interior
-    res += (p.x - q.x) * (p.y + q.y)
-    // area of the border tiles
-    res += Math.abs(p.x - q.x)
-    res += Math.abs(p.y - q.y)
-  }
-  return (Math.abs(res) / 2) + 1
-}
-
 export function partOne(input: string, hexInstructions: boolean = false): number {
   const path = createPath(input, hexInstructions)
-  return getHoleSize(path)
+  return getArea(path, 1)
 }
 
 export function partTwo(input: string): number {

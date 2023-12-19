@@ -18,3 +18,21 @@ export function asThreaded<I extends any[], O>(func: (...args: I) => O, funcFile
 export function arrayProduct(array: number[]): number {
   return array.reduce((a, b) => a * b, 1)
 }
+
+// https://cp-algorithms.com/geometry/area-of-simple-polygon.html
+export function getArea(path: Pos[], borderScale: number): number {
+  let res = 0
+
+  for (let i = 0; i < path.length; i++) {
+    const p = i > 0 ? path[i - 1] : path[path.length - 1]
+    const q = path[i]
+    // area from the interior
+    res += (p.x - q.x) * (p.y + q.y)
+    // area of the border tiles
+    if (borderScale !== 0) {
+      res += Math.abs(p.x - q.x) * borderScale
+      res += Math.abs(p.y - q.y) * borderScale
+    }
+  }
+  return (Math.abs(res) / 2) + 1
+}

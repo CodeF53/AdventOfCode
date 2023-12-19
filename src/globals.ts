@@ -5,5 +5,12 @@ import lodash from 'lodash'
 // eslint-disable-next-line ts/no-unsafe-member-access
 (globalThis as any)._ = lodash
 
-// convince TypeScript not to scream when it sees lodash used in other files
-declare global { const _: LoDashStatic }
+declare global {
+  // convince TypeScript not to scream when it sees lodash used in other files
+  const _: LoDashStatic
+
+  interface Pos {
+    x: number
+    y: number
+  }
+}

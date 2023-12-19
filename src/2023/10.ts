@@ -1,6 +1,5 @@
 // https://adventofcode.com/2023/day/10
-import _ from 'lodash'
-import { asThreaded } from '../utils'
+import { getArea } from '../utils'
 
 let tileGrid: string[][]
 
@@ -15,10 +14,6 @@ const tiles: Record<string, Tile> = {
   '7': { s: true, w: true },
   'F': { s: true, e: true },
   'S': { n: true, s: true, e: true, w: true },
-}
-interface Pos {
-  x: number
-  y: number
 }
 
 function getInverseDir(dir: Direction): Direction {
@@ -106,40 +101,9 @@ export function partOne(input: string): number {
   return (getLoopPositions(sPos).size) / 2
 }
 
-function includes(collection: any, targetObject: any) {
-  return _.some(collection, item => _.isEqual(item, targetObject))
-}
-
-export function countRowEnclosed(tileGrid_: string[][], y: number, loopPositions: Pos[]): number {
-  tileGrid = tileGrid_
-  let c = 0
-  let up = false
-  for (let x = 0; x < tileGrid[y].length; x++) {
-    const pos = { x, y }
-    const tile = getTile(pos)
-    const inLoop = tile && includes(loopPositions, pos)
-    if (inLoop && tile.s)
-      up = !up
-    if (up && !inLoop)
-      c++
-  }
-  return c
-}
-
 export async function partTwo(input: string): Promise<number> {
   const sPos = procInput(input)
   const loopPositions = [...getLoopPositions(sPos)]
-  // turn S into whatever pipe it actually is
-  const d: Tile = { }
-  for (const direction of directions)
-    if (includes([loopPositions.at(0), loopPositions.at(-2)], offsetPos(sPos, direction))) d[direction] = true
-  tileGrid[sPos.y][sPos.x] = _.findKey(tiles, tile => _.isEqual(d, tile))!
 
-  // count number of enclosed pipes (multithreaded because I can't figure out how to optimise)
-  const tasks = []
-  const countRowEnclosedParallel = asThreaded(countRowEnclosed, import.meta.url)
-  for (let y = 0; y < tileGrid.length; y++)
-    tasks.push(countRowEnclosedParallel(tileGrid, y, loopPositions))
-
-  return _.sum(await Promise.all(tasks))
+  return getArea(loopPositions, -1)
 }
