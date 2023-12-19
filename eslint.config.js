@@ -12,5 +12,6 @@ export default await antfu({
     'ts/unbound-method': 'off',
     'no-new': 'off',
     'unused-imports/no-unused-vars': 'warn',
+    'no-eval': 'off',
   },
 })
