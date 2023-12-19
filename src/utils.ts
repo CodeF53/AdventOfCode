@@ -61,3 +61,7 @@ export function offsetPos(origin: Pos, dir: Direction, amount: number = 1): Pos 
     case 'w': return { x: origin.x - amount, y: origin.y }
   }
 }
+
+export function rotate90<T extends any[]>(grid: T[]): T[] {
+  return _.zip(...grid).map(row => _.reverse(row) as T)
+}

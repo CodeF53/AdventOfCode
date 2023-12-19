@@ -1,15 +1,17 @@
 // https://adventofcode.com/2023/day/11
+import type { Pos } from '../utils'
+import { rotate90 } from '../utils'
+
 type Grid = string[][]
-interface Coords { x: number, y: number }
 
 interface Expansions {
   horzExpansions: number[]
   vertExpansions: number[]
 }
 
-function getGalaxies(grid: Grid): Coords[] {
+function getGalaxies(grid: Grid): Pos[] {
   return grid.flatMap((line, y) => line.map((pixel, x) => pixel === '#' ? { x, y } : undefined))
-    .filter(pixel => pixel !== undefined) as Coords[]
+    .filter(pixel => pixel !== undefined) as Pos[]
 }
 
 function getVertExpansions(grid: Grid): number[] {
@@ -23,7 +25,7 @@ function getVertExpansions(grid: Grid): number[] {
 
 function getHorzExpansions(grid: Grid): number[] {
   // pivot grid 90 degrees then check using vertical code
-  return getVertExpansions(_.zip(...grid) as Grid)
+  return getVertExpansions(rotate90(grid))
 }
 
 function getExpansions(grid: Grid): Expansions {
@@ -33,7 +35,7 @@ function getExpansions(grid: Grid): Expansions {
 function between(a: number, b: number, x: number) {
   return Math.min(a, b) < x && x < Math.max(a, b)
 }
-function distance(galaxyA: Coords, galaxyB: Coords, expansions: Expansions, expansionDistance: number) {
+function distance(galaxyA: Pos, galaxyB: Pos, expansions: Expansions, expansionDistance: number) {
   const getEncounteredExpansions = (axis: ('x' | 'y'), expansions: number[]) => {
     return expansions.filter(coord => between(galaxyA[axis], galaxyB[axis], coord)).length
   }

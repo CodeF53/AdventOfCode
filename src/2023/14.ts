@@ -1,4 +1,6 @@
 // https://adventofcode.com/2023/day/14
+import { rotate90 } from '../utils'
+
 function tiltNorth(grid: string[][]) {
   for (let r = 1; r < grid.length; r++) {
     const row = grid[r]
@@ -16,15 +18,11 @@ function tiltNorth(grid: string[][]) {
   }
   return grid
 }
-function rotate90(grid: string[][]): string[][] {
-  return _.zip(...grid).map(row => _.reverse(row))
-}
 function spinCycle(grid: string[][]) {
-  grid = tiltNorth(grid) // n
-  grid = tiltNorth(rotate90(grid)) // w
-  grid = tiltNorth(rotate90(grid)) // s
-  grid = tiltNorth(rotate90(grid)) // e
-  grid = rotate90(grid) // rotate back to normal
+  grid = rotate90(tiltNorth(grid)) // n
+  grid = rotate90(tiltNorth(grid)) // w
+  grid = rotate90(tiltNorth(grid)) // s
+  grid = rotate90(tiltNorth(grid)) // e
   return grid
 }
 

@@ -1,4 +1,5 @@
 // https://adventofcode.com/2023/day/13
+import { rotate90 } from '../utils'
 
 function areEqual(a: string[], b: string[], allowFuzzy: boolean): { equal: boolean, fuzzyUsed: boolean } {
   let differences = 0
@@ -43,7 +44,7 @@ function findReflectionHorz(pattern: string[][], seekSmudge = false): number {
   return -1
 }
 function findReflectionVert(pattern: string[][], seekSmudge = false): number {
-  return findReflectionHorz(_.zip(...pattern) as string[][], seekSmudge)
+  return findReflectionHorz(rotate90(pattern), seekSmudge)
 }
 
 export function partOne(input: string, seekSmudge = false): number {
