@@ -36,3 +36,28 @@ export function getArea(path: Pos[], borderScale: number): number {
   }
   return (Math.abs(res) / 2) + 1
 }
+
+export const directions = ['n', 's', 'e', 'w'] as const
+export type Direction = typeof directions[number]
+export interface Pos {
+  x: number
+  y: number
+}
+
+export function getInverseDir(dir: Direction): Direction {
+  switch (dir) {
+    case 'n': return 's'
+    case 's': return 'n'
+    case 'e': return 'w'
+    case 'w': return 'e'
+  }
+}
+
+export function offsetPos(origin: Pos, dir: Direction, amount: number = 1): Pos {
+  switch (dir) {
+    case 'n': return { x: origin.x, y: origin.y - amount }
+    case 's': return { x: origin.x, y: origin.y + amount }
+    case 'e': return { x: origin.x + amount, y: origin.y }
+    case 'w': return { x: origin.x - amount, y: origin.y }
+  }
+}

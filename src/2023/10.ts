@@ -1,10 +1,9 @@
 // https://adventofcode.com/2023/day/10
-import { getArea } from '../utils'
+import type { Direction, Pos } from '../utils'
+import { directions, getArea, getInverseDir, offsetPos } from '../utils'
 
 let tileGrid: string[][]
 
-const directions = ['n', 's', 'e', 'w'] as const
-type Direction = typeof directions[number]
 type Tile = Partial<Record<Direction, boolean>>
 const tiles: Record<string, Tile> = {
   '|': { n: true, s: true },
@@ -14,23 +13,6 @@ const tiles: Record<string, Tile> = {
   '7': { s: true, w: true },
   'F': { s: true, e: true },
   'S': { n: true, s: true, e: true, w: true },
-}
-
-function getInverseDir(dir: Direction): Direction {
-  switch (dir) {
-    case 'n': return 's'
-    case 's': return 'n'
-    case 'e': return 'w'
-    case 'w': return 'e'
-  }
-}
-function offsetPos(origin: Pos, dir: Direction): Pos {
-  switch (dir) {
-    case 'n': return { x: origin.x, y: origin.y - 1 }
-    case 's': return { x: origin.x, y: origin.y + 1 }
-    case 'e': return { x: origin.x + 1, y: origin.y }
-    case 'w': return { x: origin.x - 1, y: origin.y }
-  }
 }
 
 function getTile(pos: Pos): Tile | undefined {

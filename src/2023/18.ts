@@ -1,19 +1,10 @@
 // https://adventofcode.com/2023/day/18
-import { getArea } from '../utils'
+import type { Direction, Pos } from '../utils'
+import { directions, getArea, offsetPos } from '../utils'
 
-const directions = ['U', 'D', 'R', 'L'] as const
-type Direction = typeof directions[number]
-function offsetPos(origin: Pos, dir: Direction, amount: number): Pos {
-  switch (dir) {
-    case 'U': return { x: origin.x, y: origin.y - amount }
-    case 'D': return { x: origin.x, y: origin.y + amount }
-    case 'R': return { x: origin.x + amount, y: origin.y }
-    case 'L': return { x: origin.x - amount, y: origin.y }
-  }
-}
-
+const dumbDirections = ['U', 'D', 'R', 'L']
 function parseInstruction(instruction: string[]): { direction: Direction, count: number } {
-  const direction = instruction[0] as Direction
+  const direction = directions[dumbDirections.indexOf(instruction[0])]
   const count = Number(instruction[1])
   return { direction, count }
 }
@@ -22,16 +13,16 @@ function parseHexInstruction(hexCode: string): { direction: Direction, count: nu
   let direction: Direction
   switch (hexCode.at(-1)) {
     case '0':
-      direction = 'R'
+      direction = 'e'
       break
     case '1':
-      direction = 'D'
+      direction = 's'
       break
     case '2':
-      direction = 'L'
+      direction = 'w'
       break
     case '3':
-      direction = 'U'
+      direction = 'n'
       break
     default: throw new Error(`Unexpected Direction code ${hexCode.at(-1)}`)
   }

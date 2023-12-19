@@ -1,13 +1,8 @@
 // https://adventofcode.com/2023/day/16
 import _ from 'lodash'
-import { asThreaded } from '../utils'
+import type { Direction, Pos } from '../utils'
+import { asThreaded, directions, offsetPos } from '../utils'
 
-interface Pos {
-  x: number
-  y: number
-}
-const directions = ['n', 's', 'e', 'w'] as const
-type Direction = typeof directions[number]
 let mirrorGrid: string[][]
 const gridTravels = {} as Record<Direction, boolean[][]>
 
@@ -17,15 +12,6 @@ function initGrids(input: string) {
   const width = mirrorGrid[0].length
   for (const direction of directions)
     gridTravels[direction] = Array.from({ length: height }, () => Array.from({ length: width }))
-}
-
-function offsetPos(origin: Pos, dir: Direction): Pos {
-  switch (dir) {
-    case 'n': return { x: origin.x, y: origin.y - 1 }
-    case 's': return { x: origin.x, y: origin.y + 1 }
-    case 'e': return { x: origin.x + 1, y: origin.y }
-    case 'w': return { x: origin.x - 1, y: origin.y }
-  }
 }
 
 function reflect(pos: Pos, dir: Direction): Direction[] {
