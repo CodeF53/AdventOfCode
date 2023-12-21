@@ -1,6 +1,10 @@
 // https://adventofcode.com/2023/day/20
+import { lcm } from '../utils'
+
 abstract class Module {
   targets: Module[] = []
+  inputs: Module[] = []
+
   constructor(public targetIds: string[], public id: string) {
     Module.all[id] = this
   }
@@ -10,8 +14,12 @@ abstract class Module {
     this.targets = this.targetIds.map((id) => {
       if (Module.all[id])
         return Module.all[id]
-      return new DumbModule([], id)
+      const target = new DumbModule([], id)
+      target.init()
+      return target
     })
+
+    this.inputs = _.values(Module.all).filter(module => module.targetIds.includes(this.id))
   }
 
   // given a pulse from a specific module,
@@ -44,9 +52,7 @@ class Conjunction extends Module {
 
   init() {
     super.init()
-    // get all the stuff that will input into us
-    const inputs: Module[] = _.values(Module.all).filter(module => module.targetIds.includes(this.id))
-    inputs.forEach(inputModule => this.recentReceived[inputModule.id] = false)
+    this.inputs.forEach(inputModule => this.recentReceived[inputModule.id] = false)
   }
 }
 
@@ -81,7 +87,7 @@ function initModules(input: string) {
   _.values(Module.all).forEach(module => module.init())
 }
 
-function pressButton(button: DumbModule) {
+function pressButton(button: DumbModule, pulseListener: (module: Module, pulse: boolean) => void = () => {}) {
   const toSend: [boolean, Module][] = [[false, button]]
   let highPulseCount = 0
   let lowPulseCount = 0
@@ -93,6 +99,7 @@ function pressButton(button: DumbModule) {
     if (pulse) highPulseCount += targets.length
     else lowPulseCount += targets.length
 
+    pulseListener(module, pulse)
     for (const target of targets) {
       // console.log(id, pulse ? '-high->' : '-low->', target.id)
       const response = target.receivePulse(id, pulse)
@@ -121,5 +128,26 @@ export function partOne(input: string): number {
 }
 
 export function partTwo(input: string): number {
-  return -1
+  initModules(input)
+  const button: DumbModule = Module.all.button
+  const rxInputs = new Set((Module.all.rx as Conjunction).inputs[0].inputs.map(i => i.id))
+
+  let pressCount = 0
+  const highCycles: number[] = []
+  const cyclesFor = new Set<string>()
+
+  function pulseListener(module: Module, pulse: boolean) {
+    if (pulse && rxInputs.has(module.id) && !cyclesFor.has(module.id)) {
+      // console.log(`${module.id} pulses high at ${pressCount}`)
+      cyclesFor.add(module.id)
+      highCycles.push(pressCount)
+    }
+  }
+
+  while (rxInputs.size > cyclesFor.size) {
+    pressCount++
+    pressButton(button, pulseListener)
+  }
+
+  return lcm(highCycles)
 }

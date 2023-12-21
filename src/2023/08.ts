@@ -1,4 +1,5 @@
 // https://adventofcode.com/2023/day/8
+import { lcm } from '../utils'
 
 type Instruction = 'L' | 'R'
 type Links = Record<Instruction, string>
@@ -41,12 +42,4 @@ export function partTwo(input: string): number {
   const stepsPerLocation = startLocations.map(startLocation => getSteps(startLocation, location => location.endsWith('Z'), instructions, guide))
 
   return lcm(stepsPerLocation)
-}
-
-// https://www.geeksforgeeks.org/lcm-of-given-array-elements/ simplified to use reduce
-function lcm(arr: number[]): number {
-  return arr.reduce((acc, n) => (acc * n) / gcd(acc, n))
-}
-function gcd(a: number, b: number): number {
-  return b === 0 ? a : gcd(b, a % b)
 }

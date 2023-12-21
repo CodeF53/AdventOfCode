@@ -65,3 +65,11 @@ export function offsetPos(origin: Pos, dir: Direction, amount: number = 1): Pos 
 export function rotate90<T extends any[]>(grid: T[]): T[] {
   return _.zip(...grid).map(row => _.reverse(row) as T)
 }
+
+// https://www.geeksforgeeks.org/lcm-of-given-array-elements/ simplified to use reduce
+export function lcm(arr: number[]): number {
+  return arr.reduce((acc, n) => (acc * n) / gcd(acc, n))
+}
+export function gcd(a: number, b: number): number {
+  return b === 0 ? a : gcd(b, a % b)
+}
