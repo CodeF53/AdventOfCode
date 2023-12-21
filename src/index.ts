@@ -16,14 +16,14 @@ const [input, examples] = await Promise.all([
 // run specified solution
 type SolutionResult = Promise<{ toString: () => string }>
 interface SolutionFunctions {
-  partOne: (input: string) => SolutionResult
-  partTwo: (input: string) => SolutionResult
+  partOne: (input: string, isTest: boolean) => SolutionResult
+  partTwo: (input: string, isTest: boolean) => SolutionResult
 }
 const solution = (await import(`./${year}/${padDay(day)}`)) as SolutionFunctions
 
 const { partOne, partTwo } = solution
 
-async function ppAndTime(func: (input: string) => SolutionResult) {
+async function ppAndTime(func: (input: string, isTest: boolean) => SolutionResult) {
   if (func.name !== 'partOne' && func.name !== 'partTwo')
     return
   console.log(`\nDay ${day} ${func.name}:`)
@@ -31,14 +31,14 @@ async function ppAndTime(func: (input: string) => SolutionResult) {
   // test case
   if (examples[func.name]) {
     const testData = examples[func.name]!
-    const testAnswer = (await func(testData.input)).toString()
+    const testAnswer = (await func(testData.input, true)).toString()
     const testCorrect = testAnswer === testData.output
     console.log(` Test: ${testCorrect ? '✅' : `❌ expected ${testData.output} got`} ${testAnswer}`)
   }
 
   // real answer w/ timings
   const start = performance.now()
-  const answer = await func(input)
+  const answer = await func(input, false)
   const end = performance.now()
   const time = `${(end - start).toFixed(3)}ms`
   console.log(` Real: ${answer.toString()}\t${time}`)
