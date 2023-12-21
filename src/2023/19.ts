@@ -80,7 +80,6 @@ class NumRange {
         return { rTrue: this }
       if (this.min >= compareNum)
         return { rFalse: this }
-
       return { rTrue: new NumRange(this.min, compareNum - 1), rFalse: new NumRange(compareNum, this.max) }
     }
     if (this.min > compareNum)
@@ -88,10 +87,6 @@ class NumRange {
     if (this.max <= compareNum)
       return { rFalse: this }
     return { rTrue: new NumRange(compareNum + 1, this.max), rFalse: new NumRange(this.min, compareNum) }
-  }
-
-  toString() {
-    return `${this.min}..${this.max}`
   }
 }
 
@@ -127,10 +122,6 @@ class PartRange {
   size() {
     return arrayProduct(categories.map(cat => this[cat].size))
   }
-
-  toString() {
-    return `size: ${this.size()}\n${categories.map(cat => `  ${cat}: ${this[cat].toString()}`).join('\n')}`
-  }
 }
 
 export function partTwo(input: string): number {
@@ -146,17 +137,7 @@ export function partTwo(input: string): number {
         const range = workflowRanges.pop()
         if (!range) continue
 
-        // if (rule.category)
-        //   console.log('splitting', `${workflowName}[${rule.category}]`, range[rule.category].toString())
         const processedRanges = range.runRule(rule, workflowName)
-        // if (rule.category) {
-        //   console.log(' ', rule.category, rule.operation, rule.compareNum)
-        //   _.forIn(processedRanges, (v, k) => console.log(k, v[rule.category!].toString()))
-        //   console.log('\n')
-        // }
-        // else {
-        //   console.log(workflowName, '->', Object.keys(processedRanges)[0], '\n')
-        // }
 
         _.forIn(processedRanges, (value, key) => {
           if (ranges[key] === undefined) ranges[key] = []
@@ -167,7 +148,6 @@ export function partTwo(input: string): number {
         delete ranges[workflowName]
     })
   }
-  console.log(ranges.A.map(range => range.toString()).join('\n\n'))
 
   return _.sumBy(ranges.A, range => range.size())
 }
