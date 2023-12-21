@@ -71,7 +71,7 @@ export function partOne(input: string): number {
 class NumRange {
   size: number
   constructor(public min: number, public max: number) {
-    this.size = max - min
+    this.size = max - min + 1
   }
 
   split(operation: Operation, compareNum: number): { rTrue?: NumRange, rFalse?: NumRange } {
@@ -171,5 +171,3 @@ export function partTwo(input: string): number {
 
   return _.sumBy(ranges.A, range => range.size())
 }
-// expected 167409079868000
-// got      167010937327821
