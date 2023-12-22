@@ -11,19 +11,27 @@ function dirToArr(dir: Direction) {
 }
 
 class Node {
+  static grid: number[][]
+  static gridWidth: number
+  static gridHeight: number
   static minMoveDist: number
   static maxMoveDist: number
-
-  totalCost: number
-  distance: number
-  constructor(grid: number[][], public pos: Pos, public cost: number, public pathCost: number, public direction: Direction, public moveCount: number, public parent?: Node) {
-    this.totalCost = cost + pathCost
-    const rows = grid.length
-    const cols = grid[0].length
-    this.distance = (cols - pos.x) + (rows - pos.y)
+  static seen: Set<string>
+  static initNode(grid: number[][], minMoveDist: number, maxMoveDist: number) {
+    Node.grid = grid
+    Node.gridWidth = grid[0].length
+    Node.gridHeight = grid.length
+    Node.minMoveDist = minMoveDist
+    Node.maxMoveDist = maxMoveDist
+    Node.seen = new Set()
   }
 
-  getConnections(grid: number[][]): Node[] {
+  totalCost: number
+  constructor(public pos: Pos, public cost: number, public pathCost: number, public direction: Direction, public moveCount: number, public parent?: Node) {
+    this.totalCost = cost + pathCost
+  }
+
+  getConnections(): Node[] {
     const out: Node[] = []
     let moveCount = 1
     const backtrackDir = getInverseDir(this.direction)
@@ -42,10 +50,17 @@ class Node {
       }
       const pos = offsetPos(this.pos, direction)
       // prevent OOB
-      if (pos.x < 0 || pos.y < 0 || pos.y >= grid.length || pos.x >= grid[0].length)
+      if (pos.x < 0 || pos.y < 0 || pos.y >= Node.gridHeight || pos.x >= Node.gridWidth)
         continue
-      const cost = grid[pos.y][pos.x]
-      out.push(new Node(grid, pos, cost, this.totalCost, direction, moveCount, this))
+
+      // check if we have seen this before creating it
+      const key = `${pos.y}${direction}${pos.x}:${moveCount}`
+      if (Node.seen.has(key)) continue
+      Node.seen.add(key)
+
+      const cost = Node.grid[pos.y][pos.x]
+
+      out.push(new Node(pos, cost, this.totalCost, direction, moveCount, this))
     }
     return out
   }
@@ -56,8 +71,8 @@ class Node {
     return [...this.parent.chain(), this]
   }
 
-  pathPretty(grid: number[][]) {
-    const displayGrid: (string | number)[][] = _.cloneDeep(grid)
+  pathPretty() {
+    const displayGrid: (string | number)[][] = _.cloneDeep(Node.grid)
     const chain = this.chain().slice(1)
     for (const { pos, direction } of chain)
       displayGrid[pos.y][pos.x] = `\x1B[22m${dirToArr(direction)}\x1B[2m`
@@ -70,26 +85,18 @@ class Node {
   }
 }
 
-function lowestSumPath(grid: number[][]): number {
-  const targetY = grid.length - 1
-  const targetX = grid[0].length - 1
-  const seen = new Set<string>()
+function lowestSumPath(): number {
+  const targetY = Node.gridHeight - 1
+  const targetX = Node.gridWidth - 1
 
   const queue: Node[] = []
-  queue.push(new Node(grid, { x: 0, y: 0 }, 0, 0, 'e', 0))
+  queue.push(new Node({ x: 0, y: 0 }, 0, 0, 'e', 0))
 
   let minCost = Number.POSITIVE_INFINITY
   let bestPath: Node
-  let exploredNodes = 0
   while (!_.isEmpty(queue)) {
-    if (++exploredNodes % 100000 === 0)
-      console.log('explored', exploredNodes)
     const currentNode = queue.shift() as Node
     const { pos, totalCost } = currentNode
-
-    const key = currentNode.key()
-    if (seen.has(key)) continue
-    seen.add(key)
 
     if (pos.x === targetX && pos.y === targetY && totalCost < minCost) {
       minCost = totalCost
@@ -99,24 +106,20 @@ function lowestSumPath(grid: number[][]): number {
 
     // add connections to this node to the queue
     // (puts them where they need to be so its already sorted)
-    for (const connection of currentNode.getConnections(grid))
+    for (const connection of currentNode.getConnections())
       queue.splice(_.sortedIndexBy(queue, connection, 'totalCost'), 0, connection)
   }
-  bestPath!.pathPretty(grid)
+  bestPath!.pathPretty()
 
   return minCost
 }
 
 export function partOne(input: string): number {
-  Node.minMoveDist = 0
-  Node.maxMoveDist = 3
-  const grid = input.split('\n').map(a => a.split('').map(Number))
-  return lowestSumPath(grid)
+  Node.initNode(input.split('\n').map(a => a.split('').map(Number)), 0, 3)
+  return lowestSumPath()
 }
 
 export function partTwo(input: string): number {
-  Node.minMoveDist = 4
-  Node.maxMoveDist = 10
-  const grid = input.split('\n').map(a => a.split('').map(Number))
-  return lowestSumPath(grid)
+  Node.initNode(input.split('\n').map(a => a.split('').map(Number)), 4, 10)
+  return lowestSumPath()
 }
