@@ -59,43 +59,40 @@ class Node {
 
     console.log(`\x1B[2m${displayGrid.map(line => line.join('')).join('\n\x1B[2m')}\x1B[0m`)
   }
+
+  key() {
+    return `${this.pos.y}${this.direction}${this.pos.x}:${this.moveCount}`
+  }
 }
 
 function lowestSumPath(grid: number[][]): number {
-  const rows = grid.length
-  const cols = grid[0].length
-  const visited: Record<Direction, { totalCost: number, moveCount: number }[][]> = {}
-  for (const direction of directions)
-    visited[direction] = Array.from({ length: rows }, () => Array(cols).fill({ totalCost: Number.POSITIVE_INFINITY, moveCount: Number.POSITIVE_INFINITY }) as { totalCost: number, moveCount: number }[])
+  const targetY = grid.length - 1
+  const targetX = grid[0].length - 1
+  const seen = new Set<string>()
 
-  let queue: Node[] = []
+  const queue: Node[] = []
   queue.push(new Node(grid, { x: 0, y: 0 }, 0, 0, 'n', 0))
 
   let minCost = Number.POSITIVE_INFINITY
   let bestPath: Node
-  let nodesSearched = 0
   while (!_.isEmpty(queue)) {
-    nodesSearched++
-    if (nodesSearched % 50000 === 0)
-      console.log(`${nodesSearched} nodes searched.`)
-
     const currentNode = queue.shift() as Node
-    const { pos, totalCost, direction, moveCount } = currentNode
-    const visitCache = visited[direction][pos.y][pos.x]
+    const { pos, totalCost } = currentNode
 
-    if (visitCache.totalCost <= totalCost && visitCache.moveCount <= moveCount)
-      continue
-    if (pos.x === cols - 1 && pos.y === rows - 1 && totalCost < minCost) {
+    const key = currentNode.key()
+    if (seen.has(key)) continue
+    seen.add(key)
+
+    if (pos.x === targetX && pos.y === targetY && totalCost < minCost) {
       minCost = totalCost
       bestPath = currentNode
-      console.log(`${nodesSearched} nodes searched.`)
       continue
     }
 
-    visited[direction][pos.y][pos.x] = { totalCost, moveCount }
-
-    queue.push(...currentNode.getConnections(grid))
-    queue = _.sortBy(queue, ['totalCost'])
+    // add connections to this node to the queue
+    // (puts them where they need to be so its already sorted)
+    for (const connection of currentNode.getConnections(grid))
+      queue.splice(_.sortedIndexBy(queue, connection, 'totalCost'), 0, connection)
   }
   bestPath!.pathPretty(grid)
   return minCost
@@ -108,6 +105,7 @@ export function partOne(input: string): number {
 }
 
 export function partTwo(input: string): number {
-  const grid = input.split('\n').map(a => a.split('').map(Number))
-  return lowestSumPath(grid)
+  // const grid = input.split('\n').map(a => a.split('').map(Number))
+  // return lowestSumPath(grid)
+  return -1
 }
