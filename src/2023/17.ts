@@ -11,6 +11,9 @@ function dirToArr(dir: Direction) {
 }
 
 class Node {
+  static minMoveDist: number
+  static maxMoveDist: number
+
   totalCost: number
   distance: number
   constructor(grid: number[][], public pos: Pos, public cost: number, public pathCost: number, public direction: Direction, public moveCount: number, public parent?: Node) {
@@ -27,12 +30,14 @@ class Node {
     for (const direction of directions) {
       // prevent backtracking
       if (direction === backtrackDir) continue
-      // prevent moving too far at once
+      // if moving in the same direction, prevent moving too far at once
       if (direction === this.direction) {
-        if (this.moveCount >= 3) continue
+        if (this.moveCount >= Node.maxMoveDist) continue
         moveCount = this.moveCount + 1
       }
+      // if changing direction, prevent changing before moving minimum amount
       else {
+        if (this.moveCount < Node.minMoveDist) continue
         moveCount = 1
       }
       const pos = offsetPos(this.pos, direction)
@@ -48,12 +53,12 @@ class Node {
   chain(): Node[] {
     if (!this.parent)
       return [this]
-    return [this, ...this.parent.chain()]
+    return [...this.parent.chain(), this]
   }
 
   pathPretty(grid: number[][]) {
     const displayGrid: (string | number)[][] = _.cloneDeep(grid)
-    const chain = this.chain().reverse().slice(1)
+    const chain = this.chain().slice(1)
     for (const { pos, direction } of chain)
       displayGrid[pos.y][pos.x] = `\x1B[22m${dirToArr(direction)}\x1B[2m`
 
@@ -75,7 +80,10 @@ function lowestSumPath(grid: number[][]): number {
 
   let minCost = Number.POSITIVE_INFINITY
   let bestPath: Node
+  let exploredNodes = 0
   while (!_.isEmpty(queue)) {
+    if (++exploredNodes % 100000 === 0)
+      console.log('explored', exploredNodes)
     const currentNode = queue.shift() as Node
     const { pos, totalCost } = currentNode
 
@@ -95,17 +103,20 @@ function lowestSumPath(grid: number[][]): number {
       queue.splice(_.sortedIndexBy(queue, connection, 'totalCost'), 0, connection)
   }
   bestPath!.pathPretty(grid)
+
   return minCost
 }
 
 export function partOne(input: string): number {
-  // ! Test passes, 798 is too high
+  Node.minMoveDist = 0
+  Node.maxMoveDist = 3
   const grid = input.split('\n').map(a => a.split('').map(Number))
   return lowestSumPath(grid)
 }
 
 export function partTwo(input: string): number {
-  // const grid = input.split('\n').map(a => a.split('').map(Number))
-  // return lowestSumPath(grid)
-  return -1
+  Node.minMoveDist = 4
+  Node.maxMoveDist = 10
+  const grid = input.split('\n').map(a => a.split('').map(Number))
+  return lowestSumPath(grid)
 }
