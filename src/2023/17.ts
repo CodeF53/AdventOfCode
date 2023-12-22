@@ -71,7 +71,7 @@ function lowestSumPath(grid: number[][]): number {
   const seen = new Set<string>()
 
   const queue: Node[] = []
-  queue.push(new Node(grid, { x: 0, y: 0 }, 0, 0, 'n', 0))
+  queue.push(new Node(grid, { x: 0, y: 0 }, 0, 0, 'e', 0))
 
   let minCost = Number.POSITIVE_INFINITY
   let bestPath: Node
