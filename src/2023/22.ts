@@ -160,13 +160,14 @@ class Brick {
       // exclude root from external support check
       if (brick.id === this.id) continue
 
-      if (brick.supportedBy.some(support => !tree.includes(support)) || brokenBranches.includes(brick)) {
-        brokenBranches.push(...brick.supporting)
+      if (brick.supportedBy.some(support => !tree.includes(support))) {
+        brokenBranches.push(...brick.tree)
         continue
       }
 
       out.push(brick)
     }
+    _.pullAll(out, brokenBranches)
 
     return out
   }
