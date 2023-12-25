@@ -122,8 +122,8 @@ class Brick {
 
       for (const brickB of toScan) {
         const bMinZ = brickB.min.z
-        if (aMaxZ + 1 !== bMinZ)
-          continue
+        if (aMaxZ + 1 < bMinZ)
+          break
         if (!brickA.intersectXY(brickB))
           continue
 
@@ -151,8 +151,6 @@ class Brick {
   }
 
   chainReaction(): Brick[] {
-    if (this.safeToDestroy())
-      return []
     const tree = this.getTree()
 
     // remove links from tree that are externally supported
@@ -177,19 +175,17 @@ class Brick {
 function parseInput(input: string) {
   Brick.all = []
   input.split('\n').forEach(brickStr => new Brick(brickStr))
+  Brick.gravity()
+  Brick.genSupportInfo()
 }
 
 export function partOne(input: string): number {
   parseInput(input)
-  Brick.gravity()
-  Brick.genSupportInfo()
   return _.sumBy(Brick.all, b => b.safeToDestroy() ? 1 : 0)
 }
 
 export function partTwo(input: string): number {
   parseInput(input)
-  Brick.gravity()
-  Brick.genSupportInfo()
 
   return _.sumBy(Brick.all, b => b.chainReaction().length)!
 }
