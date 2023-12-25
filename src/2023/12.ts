@@ -1,52 +1,61 @@
 // https://adventofcode.com/2023/day/12
-import _ from 'lodash'
-import { asThreaded } from '../utils'
 
-function isValid(springs: string[], damagedGroups: number[]): boolean {
-  const givenDamagedGroups = _.reject(springs.join('').split(/\.+/), _.isEmpty).map(damagedGroup => damagedGroup.length)
-  return _.isEqual(givenDamagedGroups, damagedGroups)
+interface Spring {
+  springs: string[]
+  groups: number[]
 }
 
-export function solveEntry(entry: string): number {
-  const [springsString, damagedGroupsString] = entry.split(' ')
-  const damagedGroups: number[] = damagedGroupsString.split(',').map(Number) // lengths of damaged groups in order
-  const springs: string[] = springsString.split('') // array of '.','#',or'?'
-  let count = 0
+function solveEntry({ springs, groups }: Spring): number {
+  const numSprings = springs.length
+  const numGroups = groups.length
+  const biggestDamageGroup = _.max(groups)!
+  const dp = _.times(numSprings + 1, () => _.times(numGroups + 1, () => _.times(biggestDamageGroup + 1, () => 0)))
 
-  const numUnknown = _.sumBy(springs, spring => spring === '?' ? 1 : 0)
-  const unknownIndices = springs.map((s, i) => [s, i]).filter(([s]) => s === '?').map(([_s, i]) => i)
-  for (let i = 0; i < 2 ** numUnknown; i++) {
-    const attempt = [...springs]
+  // base cases
+  dp[0][0][0] = 1 // Empty arrangement is valid
+  let consecutiveBroken = 0
+  // Populate base cases for consecutive broken springs:
+  let b = true
+  _.times(numSprings, (i) => {
+    consecutiveBroken = (springs[i] === '#') ? consecutiveBroken + 1 : 0
+    if (consecutiveBroken) dp[i + 1][0][consecutiveBroken] = 1
+    if (springs[i] === '#') b = false // break
+    if (b) dp[i + 1][0][0] = 1
+  })
 
-    for (let aaa = 0; aaa < numUnknown; aaa++) {
-      const val = (i >> aaa) & 1
-      const unknownIndex = unknownIndices[aaa]
-      attempt[unknownIndex] = val ? '.' : '#'
-    }
+  // dynamic programming
+  _.times(numSprings, (i) => {
+    const springState = springs[i]
+    if (springState === '.' || springState === '?') // functional
+      _.times(numGroups, j => dp[i + 1][j + 1][0] = dp[i][j][groups[j]] + dp[i][j + 1][0])
+    if (springState === '#' || springState === '?') // broken
+      _.times(numGroups + 1, j => _.times(biggestDamageGroup, k => dp[i + 1][j][k + 1] = dp[i][j][k]))
+  })
 
-    if (isValid(attempt, damagedGroups))
-      count++
-  }
-
-  return count
+  // combine final states:
+  return dp[numSprings][numGroups][0] + dp[numSprings][numGroups - 1][groups[numGroups - 1]]
 }
 
-export async function partOne(input: string): Promise<number> {
-  const tasks = []
-  const solveEntryParallel = asThreaded(solveEntry, import.meta.url)
-  for (const entry of input.split('\n'))
-    tasks.push(solveEntryParallel(entry))
+function parseEntry(entryString: string, partTwo: boolean): Spring {
+  const [springsString, damagedGroupsString] = entryString.split(' ')
+  // lengths of damaged groups in order
+  const groups: number[] = Array(partTwo ? 5 : 1).fill(damagedGroupsString.split(',').map(Number)).flat() as number[]
+  // array of '.','#',or'?'
+  const springs: string[] = Array(partTwo ? 5 : 1).fill(springsString).join('?').replaceAll(/\.{2,}/g, '.').split('')
 
-  return _.sum(await Promise.all(tasks))
+  return { springs, groups }
 }
 
-function unfold(entry: string): string {
-  const [springsString, damagedGroupsString] = entry.split(' ')
-  return `${`${springsString}?`.repeat(5).slice(0, -1)} ${`${damagedGroupsString},`.repeat(5).slice(0, -1)}`
+function parseInput(input: string, partTwo: boolean = false): Spring[] {
+  return input.split('\n').map(l => parseEntry(l, partTwo))
+}
+
+export function partOne(input: string): number {
+  const entries = parseInput(input, false)
+  return _.sumBy(entries, solveEntry)
 }
 
 export function partTwo(input: string): number {
-  const unfolded = input.split('\n').map(unfold).join('\n')
-  console.log('unfolded')
-  return partOne(unfolded)
+  const entries = parseInput(input, true)
+  return _.sumBy(entries, solveEntry)
 }
