@@ -4,18 +4,11 @@ const axes = ['x', 'y', 'z'] as const
 type Axis = typeof axes[number]
 type Pos3d = Record<Axis, number>
 
-const debugChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'.split('')
-const debugColors = [39, ...Array.from({ length: 7 }, (_v, i) => [i + 30, i + 40]).flat()].map(n => `\x1B[${n}m`)
-const debugStates = [0, 1].map(n => `\x1B[${n}m`)
-const resetDrawMode = '\x1B[0m'
-
 class Brick {
   static all: Brick[] = []
   min: Pos3d
   max: Pos3d
-  id: number
 
-  isGrounded: boolean = false
   supportedBy: Brick[] = []
   supporting: Brick[] = []
   tree: Brick[] = []
@@ -24,17 +17,7 @@ class Brick {
     const posPairs = _.zip(...brickStr.split('~').map(posStr => posStr.split(',').map(Number)))
     this.min = _.zipObject(axes, posPairs.map(_.min)) as Pos3d
     this.max = _.zipObject(axes, posPairs.map(_.max)) as Pos3d
-    this.id = Brick.all.length
     Brick.all.push(this)
-  }
-
-  debugId(): string {
-    const id = this.id
-    const charIndex = id % debugChars.length
-    const colorIndex = Math.floor(id / debugChars.length) % debugColors.length
-    const stateIndex = Math.floor(id / (debugChars.length * debugColors.length)) % debugStates.length
-
-    return `${debugStates[stateIndex]}${debugColors[colorIndex]}${debugChars[charIndex]}${resetDrawMode}`
   }
 
   intersectXY(brick: Brick): boolean {
@@ -42,48 +25,12 @@ class Brick {
       return false
     if (this.max.y < brick.min.y || brick.max.y < this.min.y)
       return false
-
     return true
   }
 
   fall(fallDist: number) {
     this.min.z -= fallDist
     this.max.z -= fallDist
-  }
-
-  static debugRender(axis: Axis) {
-    const allMaxZ = _.max(Brick.all.map(b => b.max.z))! + 1
-    const allMaxN = _.max(Brick.all.map(b => b.max[axis]))! + 1
-
-    let grid = Array.from({ length: allMaxZ }, () => Array(allMaxN).fill(' ') as string[])
-    grid[0].fill('-')
-
-    for (const brick of Brick.all) {
-      for (let z = brick.min.z; z <= brick.max.z; z++) {
-        for (let n = brick.min[axis]; n <= brick.max[axis]; n++) {
-          if (grid[z][n] === ' ')
-            grid[z][n] = brick.debugId()
-          else
-            grid[z][n] = '?'
-        }
-      }
-    }
-
-    grid.push(axis.padStart(allMaxN / 2 + 1, '-').padEnd(allMaxN, '-').split(''))
-    grid.reverse()
-    grid = _.reject(grid, e => _.isEmpty(e.join('').trim()))
-
-    return grid.map(row => row.join(''))
-  }
-
-  static debugRenderFull() {
-    const debugY = Brick.debugRender('y')
-    const debugX = Brick.debugRender('x')
-    const debug = Array.from(debugY)
-
-    for (let i = 0; i < debug.length; i++)
-      debug[i] = [debugX[i], debugY[i]].join('   ')
-    console.log(debug.join('\n'))
   }
 
   static gravity() {
@@ -158,7 +105,7 @@ class Brick {
     const brokenBranches: Brick[] = []
     for (const brick of tree) {
       // exclude root from external support check
-      if (brick.id === this.id) continue
+      if (brick === this) continue
 
       if (brick.supportedBy.some(support => !tree.includes(support))) {
         brokenBranches.push(...brick.tree)
@@ -187,6 +134,5 @@ export function partOne(input: string): number {
 
 export function partTwo(input: string): number {
   parseInput(input)
-
   return _.sumBy(Brick.all, b => b.chainReaction().length)!
 }
