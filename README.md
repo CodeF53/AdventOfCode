@@ -6,19 +6,19 @@ Repo designed to minimize time fucking around and get straight to code. See it i
 https://github.com/CodeF53/AdventOfCode/assets/37855219/a6a489bc-f61d-4ba8-9654-09005f2084d3
 
 ## Usage
-Ensure you have [node and npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm), have ran `npm i`, and [have set up your AOC token](#advent-of-code-token)
+Ensure you have [bun](https://bun.sh/), have ran `bun i`, and [have set up your AOC token](#advent-of-code-token)
 
 You can specify various start modes
 ```bash
 # asks user what day they want to launch
-npm start # equivalent to npm start ask
+bun start
 
 # instantly opens today's AOC
-npm start today
+bun start today
 
 # waits up to 15 minutes for tomorrow's AOC to release, starting the instant it's available
-# behaves like npm start today if tomorrow's AOC won't come out within 15 minutes
-npm start race
+# behaves like bun start today if tomorrow's AOC won't come out within 15 minutes
+bun start race
 ```
 
 If you aren't using VSCode or WSL, change the code in `src/start.ts` to fit how you launch your browser/editor

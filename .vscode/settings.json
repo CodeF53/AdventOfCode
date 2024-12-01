@@ -2,7 +2,7 @@
   "explorer.fileNesting.enabled": true,
   "explorer.fileNesting.expand": false,
   "explorer.fileNesting.patterns": {
-    "package.json": "tsconfig.*, eslint*, lint-staged*, package-lock.json",
+    "package.json": "tsconfig.*, eslint*, lint-staged*, bun.lockb",
     "*.ts": "$(capture).input, $(capture).ex.json"
   },
 
@@ -26,5 +26,8 @@
     "markdown",
     "json",
     "jsonc"
-  ]
+  ],
+  "[jsonc]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
+  }
 }
