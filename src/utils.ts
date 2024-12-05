@@ -39,26 +39,38 @@ export function getArea(path: Pos[], borderScale: number): number {
 
 export const directions = ['n', 's', 'e', 'w'] as const
 export type Direction = typeof directions[number]
+export const diagonals = ['ul', 'ur', 'll', 'lr'] as const
+export type Diagonal = typeof diagonals[number]
+export const dirDiags: (Direction | Diagonal)[] = [...directions, ...diagonals] as const
+export type DirDiag = Direction | Diagonal
 export interface Pos {
   x: number
   y: number
 }
 
-export function getInverseDir(dir: Direction): Direction {
+export function getInverseDir(dir: DirDiag): DirDiag {
   switch (dir) {
     case 'n': return 's'
     case 's': return 'n'
     case 'e': return 'w'
     case 'w': return 'e'
+    case 'ul': return 'lr'
+    case 'ur': return 'll'
+    case 'll': return 'ur'
+    case 'lr': return 'ul'
   }
 }
 
-export function offsetPos(origin: Pos, dir: Direction, amount: number = 1): Pos {
+export function offsetPos(origin: Pos, dir: DirDiag, amount: number = 1): Pos {
   switch (dir) {
     case 'n': return { x: origin.x, y: origin.y - amount }
     case 's': return { x: origin.x, y: origin.y + amount }
     case 'e': return { x: origin.x + amount, y: origin.y }
     case 'w': return { x: origin.x - amount, y: origin.y }
+    case 'ul': return { x: origin.x - 1, y: origin.y - 1 }
+    case 'ur': return { x: origin.x + 1, y: origin.y - 1 }
+    case 'll': return { x: origin.x - 1, y: origin.y + 1 }
+    case 'lr': return { x: origin.x + 1, y: origin.y + 1 }
   }
 }
 
