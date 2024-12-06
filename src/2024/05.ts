@@ -1,42 +1,43 @@
 // https://adventofcode.com/2024/day/5
 
-function getFirstSwap(pages: number[], rules: number[][]): [number, number] {
-  for (let i = 0; i < pages.length; i++) {
-    const page = pages[i]
-    const after = pages.slice(0, i + 1)
-    for (const [mustBeBefore, targetPage] of rules) {
-      if (page !== targetPage || !pages.includes(mustBeBefore)) continue
-      if (!after.includes(mustBeBefore))
-        return [i, pages.indexOf(mustBeBefore)]
-    }
-  }
+// returns true if array was already valid
+function swapInvalid(pages: number[], rules: number[][]): Promise<boolean> {
+  const validRules = rules.filter(rule => pages.includes(rule[0]) && pages.includes(rule[1]))
 
-  return [-1, -1]
+  return new Promise((r) => {
+    pages.forEach((page, i) => {
+      for (const [mustBeBefore, targetPage] of validRules) {
+        if (page !== targetPage) continue
+        const indexBefore = pages.indexOf(mustBeBefore)
+        if (indexBefore > i) {
+          [pages[i], pages[indexBefore]] = [pages[indexBefore], pages[i]]
+          r(false)
+        }
+      }
+    })
+    r(true)
+  })
 }
 
-export function partOne(input: string): number {
+export async function partOne(input: string): Promise<number> {
   const [rules, updates] = input.split('\n\n').map(group => group.split('\n')
     .map(line => line.split(/\||,/).map(Number)))
 
   let total = 0
   for (const update of updates)
-    if (getFirstSwap(update, rules)[0] === -1) total += update[(update.length - 1) / 2]
+    if (await swapInvalid(update, rules)) total += update[(update.length - 1) / 2]
 
   return total
 }
 
-export function partTwo(input: string): number {
+export async function partTwo(input: string): Promise<number> {
   const [rules, updates] = input.split('\n\n').map(group => group.split('\n')
     .map(line => line.split(/\||,/).map(Number)))
 
   let total = 0
   for (const update of updates) {
-    let invalid = getFirstSwap(update, rules)
-    if (invalid[0] === -1) continue
-    while (invalid[0] !== -1) {
-      [update[invalid[0]], update[invalid[1]]] = [update[invalid[1]], update[invalid[0]]]
-      invalid = getFirstSwap(update, rules)
-    }
+    if (await swapInvalid(update, rules)) continue
+    while (!(await swapInvalid(update, rules))) { /* empty */ }
 
     total += update[(update.length - 1) / 2]
   }
