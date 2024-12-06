@@ -1,27 +1,26 @@
 // https://adventofcode.com/2024/day/5
 
+function cutInput(input: string): number[][][] {
+  return input.split('\n\n').map(group => group.split('\n')
+    .map(line => line.split(/\||,/).map(Number)))
+}
+
 // returns true if array was already valid
 function swapInvalid(pages: number[], rules: number[][]): Promise<boolean> {
-  const validRules = rules.filter(rule => pages.includes(rule[0]) && pages.includes(rule[1]))
-
   return new Promise((r) => {
-    pages.forEach((page, i) => {
-      for (const [mustBeBefore, targetPage] of validRules) {
-        if (page !== targetPage) continue
-        const indexBefore = pages.indexOf(mustBeBefore)
-        if (indexBefore > i) {
-          [pages[i], pages[indexBefore]] = [pages[indexBefore], pages[i]]
-          r(false)
-        }
-      }
+    rules.forEach(([mustBeBefore, target]) => {
+      const [indexBefore, iT] = [pages.indexOf(mustBeBefore), pages.indexOf(target)]
+      if (indexBefore === -1 || iT === -1) return
+      if (indexBefore < iT) return
+      [pages[iT], pages[indexBefore]] = [pages[indexBefore], pages[iT]]
+      r(false)
     })
     r(true)
   })
 }
 
 export async function partOne(input: string): Promise<number> {
-  const [rules, updates] = input.split('\n\n').map(group => group.split('\n')
-    .map(line => line.split(/\||,/).map(Number)))
+  const [rules, updates] = cutInput(input)
 
   let total = 0
   for (const update of updates)
@@ -31,8 +30,7 @@ export async function partOne(input: string): Promise<number> {
 }
 
 export async function partTwo(input: string): Promise<number> {
-  const [rules, updates] = input.split('\n\n').map(group => group.split('\n')
-    .map(line => line.split(/\||,/).map(Number)))
+  const [rules, updates] = cutInput(input)
 
   let total = 0
   for (const update of updates) {
