@@ -1,15 +1,9 @@
 // https://adventofcode.com/2024/day/4
 
 import type { Diagonal, DirDiag, Pos } from '../utils'
-import { getInverseDir, offsetPos } from '../utils'
+import { getInverseDir, offsetPos, posOOB } from '../utils'
 
 const cutDirDiags: DirDiag[] = ['n', 'w', 'ul', 'ur']
-
-function posOOB(pos: Pos, grid: string[]): boolean {
-  if (pos.x < 0 || pos.y < 0 || pos.x >= grid[0].length || pos.y >= grid.length)
-    return true
-  return false
-}
 
 function countXMAS(aPos: Pos, grid: string[]): number {
   let count = 0

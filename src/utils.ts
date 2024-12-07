@@ -85,3 +85,9 @@ export function lcm(arr: number[]): number {
 export function gcd(a: number, b: number): number {
   return b === 0 ? a : gcd(b, a % b)
 }
+
+export function posOOB(pos: Pos, grid: string[] | any[][]): boolean {
+  if (pos.x < 0 || pos.y < 0 || pos.x >= grid[0].length || pos.y >= grid.length)
+    return true
+  return false
+}
