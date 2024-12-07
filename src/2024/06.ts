@@ -1,6 +1,6 @@
 // https://adventofcode.com/2024/day/6
 
-import { type Direction, type Pos, offsetPos, posOOB } from '../utils'
+import { type Direction, type Pos, asThreaded, offsetPos, posOOB } from '../utils'
 
 function findGuardPos(grid: string[][]): Pos {
   const y = grid.findIndex(line => line.includes('^'))
@@ -43,17 +43,24 @@ export function partOne(input: string): number {
   return marchGuard(grid, guardPos).positions.size
 }
 
-export function partTwo(input: string): number {
+export function obstructionTest(position: string, guardPos: Pos, grid: string[][]): boolean {
+  const [x, y] = position.split(',').map(Number)
+  if (guardPos.x === x && guardPos.y === y) return false
+  grid[y][x] = '#'
+  if (marchGuard(grid, guardPos).loop) {
+    grid[y][x] = '.'
+    return true
+  }
+  grid[y][x] = '.'
+  return false
+}
+
+export async function partTwo(input: string): Promise<number> {
   const grid = input.split('\n').map(line => line.split(''))
   const guardPos: Pos = findGuardPos(grid)
-  let count = 0
-  marchGuard(grid, guardPos).positions.forEach((position) => {
-    const [x, y] = position.split(',').map(Number)
-    if (guardPos.x === x && guardPos.y === y) return
-    grid[y][x] = '#'
-    if (marchGuard(grid, guardPos).loop) count++
-    grid[y][x] = '.'
-  })
+  const obstructionTestThreaded = asThreaded(obstructionTest, import.meta.url)
 
-  return count
+  return _.sum(await Promise.all([...marchGuard(grid, guardPos).positions].map((position) => {
+    return obstructionTestThreaded(position, guardPos, grid).then(a => a ? 1 : 0)
+  })))
 }
