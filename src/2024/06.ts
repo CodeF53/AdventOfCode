@@ -16,7 +16,7 @@ function rotateDir90Clockwise(dir: Direction): Direction {
   }
 }
 
-function marchGuard(grid: string[][], guardPos: Pos): { positions: Set<string>, loop: boolean } {
+function marchGuard(grid: string[][], guardPos: Pos, testObstruction?: Pos): { positions: Set<string>, loop: boolean } {
   const distinctPos = new Set<string>()
   const seenPosFacing = new Set<string>()
   let facing: Direction = 'n'
@@ -27,7 +27,7 @@ function marchGuard(grid: string[][], guardPos: Pos): { positions: Set<string>, 
     if (posOOB(stepPos, grid))
       return { positions: distinctPos, loop: false }
 
-    while (grid[stepPos.y][stepPos.x] === '#') {
+    while (grid[stepPos.y][stepPos.x] === '#' || (stepPos.y === testObstruction?.y && stepPos.x === testObstruction?.x)) {
       facing = rotateDir90Clockwise(facing)
       stepPos = offsetPos(guardPos, facing)
     }
@@ -46,12 +46,8 @@ export function partOne(input: string): number {
 export function obstructionTest(position: string, guardPos: Pos, grid: string[][]): boolean {
   const [x, y] = position.split(',').map(Number)
   if (guardPos.x === x && guardPos.y === y) return false
-  grid[y][x] = '#'
-  if (marchGuard(grid, guardPos).loop) {
-    grid[y][x] = '.'
+  if (marchGuard(grid, guardPos, { x, y }).loop)
     return true
-  }
-  grid[y][x] = '.'
   return false
 }
 
