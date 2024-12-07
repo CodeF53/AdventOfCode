@@ -16,7 +16,7 @@ function rotateDir90Clockwise(dir: Direction): Direction {
   }
 }
 
-function marchGuard(grid: string[][], guardPos: Pos, testObstruction?: Pos): { positions: Set<string>, loop: boolean } {
+function marchGuard(grid: boolean[][], guardPos: Pos, testObstruction?: Pos): { positions: Set<string>, loop: boolean } {
   const distinctPos = new Set<string>()
   const seenPosFacing = new Set<string>()
   let facing: Direction = 'n'
@@ -27,7 +27,7 @@ function marchGuard(grid: string[][], guardPos: Pos, testObstruction?: Pos): { p
     if (posOOB(stepPos, grid))
       return { positions: distinctPos, loop: false }
 
-    while (grid[stepPos.y][stepPos.x] === '#' || (stepPos.y === testObstruction?.y && stepPos.x === testObstruction?.x)) {
+    while (grid[stepPos.y][stepPos.x] || (stepPos.y === testObstruction?.y && stepPos.x === testObstruction?.x)) {
       facing = rotateDir90Clockwise(facing)
       stepPos = offsetPos(guardPos, facing)
     }
@@ -39,11 +39,12 @@ function marchGuard(grid: string[][], guardPos: Pos, testObstruction?: Pos): { p
 
 export function partOne(input: string): number {
   const grid = input.split('\n').map(line => line.split(''))
+  const obstructionGrid: boolean[][] = grid.map(line => line.map(a => a === '#'))
   const guardPos: Pos = findGuardPos(grid)
-  return marchGuard(grid, guardPos).positions.size
+  return marchGuard(obstructionGrid, guardPos).positions.size
 }
 
-export function obstructionTest(position: string, guardPos: Pos, grid: string[][]): boolean {
+export function obstructionTest(position: string, guardPos: Pos, grid: boolean[][]): boolean {
   const [x, y] = position.split(',').map(Number)
   if (guardPos.x === x && guardPos.y === y) return false
   if (marchGuard(grid, guardPos, { x, y }).loop)
@@ -53,10 +54,11 @@ export function obstructionTest(position: string, guardPos: Pos, grid: string[][
 
 export async function partTwo(input: string): Promise<number> {
   const grid = input.split('\n').map(line => line.split(''))
+  const obstructionGrid: boolean[][] = grid.map(line => line.map(a => a === '#'))
   const guardPos: Pos = findGuardPos(grid)
   const obstructionTestThreaded = asThreaded(obstructionTest, import.meta.url)
 
-  return _.sum(await Promise.all([...marchGuard(grid, guardPos).positions].map((position) => {
-    return obstructionTestThreaded(position, guardPos, grid).then(a => a ? 1 : 0)
+  return _.sum(await Promise.all([...marchGuard(obstructionGrid, guardPos).positions].map((position) => {
+    return obstructionTestThreaded(position, guardPos, obstructionGrid).then(a => a ? 1 : 0)
   })))
 }
