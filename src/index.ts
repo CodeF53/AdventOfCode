@@ -5,7 +5,7 @@ import { padDay } from './startUtil'
 const year = Number(process.env.YEAR)
 const day = Number(process.env.DAY)
 if (!year || !day)
-  throw new Error('do `npm start` instead of `npm run dev`')
+  throw new Error('do `bun start` instead of `bun run dev`')
 
 // ! I dislike getting these here, as it means we re-read their cache every reload, but I can't find pass big inputs through process.env, need alternative
 const [input, examples] = await Promise.all([

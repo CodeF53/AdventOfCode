@@ -79,7 +79,7 @@ process.env.YEAR = year.toString()
 process.env.DAY = day.toString()
 
 // Start tsx
-const dev = exec('npm run dev')
+const dev = exec('bun run dev')
 dev.stdout!.pipe(process.stdout)
 dev.stderr!.pipe(process.stderr)
 
