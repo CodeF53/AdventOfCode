@@ -53,15 +53,15 @@ export function partTwo(input: string): number {
         let i = 0
         while (!posOOB(offsetedPosA, grid)) {
           uniqueAntiNodes.add(`${offsetedPosA.x},${offsetedPosA.y}`)
-          offsetedPosA = { x: antA.x - offset.x * i, y: antA.y - offset.y * i }
           i++
+          offsetedPosA = { x: antA.x - offset.x * i, y: antA.y - offset.y * i }
         }
         offsetedPosA = { x: antA.x + offset.x, y: antA.y + offset.y }
         i = 0
         while (!posOOB(offsetedPosA, grid)) {
           uniqueAntiNodes.add(`${offsetedPosA.x},${offsetedPosA.y}`)
-          offsetedPosA = { x: antA.x + offset.x * i, y: antA.y + offset.y * i }
           i++
+          offsetedPosA = { x: antA.x + offset.x * i, y: antA.y + offset.y * i }
         }
       })
     })
