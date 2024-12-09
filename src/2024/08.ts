@@ -48,7 +48,6 @@ export function partTwo(input: string): number {
       antGroup.forEach((antB, iB) => {
         if (iB === iA) return
 
-        // I have literally no idea how to solve p2 in a sane way because the logical stuff passed tests but was too low
         const offset = { x: antB.x - antA.x, y: antB.y - antA.y }
         let offsetedPosA = { x: antA.x - offset.x, y: antA.y - offset.y }
         let i = 0
@@ -57,26 +56,11 @@ export function partTwo(input: string): number {
           offsetedPosA = { x: antA.x - offset.x * i, y: antA.y - offset.y * i }
           i++
         }
-        offsetedPosA = { x: antB.x + offset.x, y: antB.y + offset.y }
-        i = 0
-        while (!posOOB(offsetedPosA, grid)) {
-          uniqueAntiNodes.add(`${offsetedPosA.x},${offsetedPosA.y}`)
-          offsetedPosA = { x: antB.x + offset.x * i, y: antB.y + offset.y * i }
-          i++
-        }
-
         offsetedPosA = { x: antA.x + offset.x, y: antA.y + offset.y }
         i = 0
         while (!posOOB(offsetedPosA, grid)) {
           uniqueAntiNodes.add(`${offsetedPosA.x},${offsetedPosA.y}`)
           offsetedPosA = { x: antA.x + offset.x * i, y: antA.y + offset.y * i }
-          i++
-        }
-        offsetedPosA = { x: antB.x - offset.x, y: antB.y - offset.y }
-        i = 0
-        while (!posOOB(offsetedPosA, grid)) {
-          uniqueAntiNodes.add(`${offsetedPosA.x},${offsetedPosA.y}`)
-          offsetedPosA = { x: antB.x - offset.x * i, y: antB.y - offset.y * i }
           i++
         }
       })
