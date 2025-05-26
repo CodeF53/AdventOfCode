@@ -48,6 +48,9 @@ export interface Pos {
   y: number
 }
 
+export function getInverseDir(dir: Direction): Direction
+export function getInverseDir(dir: Diagonal): Diagonal
+export function getInverseDir(dir: DirDiag): DirDiag
 export function getInverseDir(dir: DirDiag): DirDiag {
   switch (dir) {
     case 'n': return 's'

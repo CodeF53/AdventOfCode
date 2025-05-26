@@ -42,7 +42,7 @@ function explorePipe(endPos: Pos, startPos: Pos, startBackTrackDir: Direction): 
   visitedPositions.add(currentPos)
 
   while (currentPos.x !== endPos.x || currentPos.y !== endPos.y) {
-    const currentTile: Tile = getTile(currentPos)!
+    const currentTile = getTile(currentPos)
     if (!currentTile) return
     let foundValidDirection = false
 
