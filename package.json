@@ -34,5 +34,8 @@
   },
   "lint-staged": {
     "*": "eslint --fix"
-  }
+  },
+  "trustedDependencies": [
+    "unrs-resolver"
+  ]
 }

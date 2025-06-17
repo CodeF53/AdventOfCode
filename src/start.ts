@@ -21,7 +21,7 @@ const getSolutionNum: Record<string, () => Promise<{ year: number, day: number }
       validate: value => value <= maxYear && value >= 2015,
     })) as { year: number }
 
-    const maxDay = year === maxYear ? currentDateTime.day : 25
+    const maxDay = year === currentYear ? currentDateTime.day : 25
     const { day } = (await prompts({
       type: 'number',
       name: 'day',
@@ -47,10 +47,10 @@ const getSolutionNum: Record<string, () => Promise<{ year: number, day: number }
     if (secondsUntilTomorrow <= 900)
       await new Promise(r => setTimeout(r, secondsUntilTomorrow * 1000))
 
-    return await getSolutionNum.today()
+    return getSolutionNum.today()
   },
 }
-const solutionNumGetter = getSolutionNum[process.argv[2]] || getSolutionNum.ask
+const solutionNumGetter = getSolutionNum[process.argv[2] || 'ask']
 const { year, day } = await solutionNumGetter()
 
 // check if the solution file exists

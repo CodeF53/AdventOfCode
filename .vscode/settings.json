@@ -2,7 +2,7 @@
   "explorer.fileNesting.enabled": true,
   "explorer.fileNesting.expand": false,
   "explorer.fileNesting.patterns": {
-    "package.json": "tsconfig.*, eslint*, lint-staged*, bun.lockb",
+    "package.json": "tsconfig.*, eslint*, lint-staged*, bun.lock",
     "Cargo.toml": "Cargo.lock",
     "*.ts": "$(capture).*",
     "*.rs": "$(capture).*"
@@ -10,7 +10,6 @@
 
   // Enable the ESlint flat config support
   "eslint.useFlatConfig": true,
-  "eslint.experimental.useFlatConfig": true,
 
   // Disable the default formatter, use eslint instead
   "prettier.enable": false,

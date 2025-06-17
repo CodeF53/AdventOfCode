@@ -5,6 +5,7 @@ export default await antfu({
     tsconfigPath: 'tsconfig.json',
   },
 }, {
+  ignores: ['bun.lock'],
   rules: {
     'node/prefer-global/process': 'off',
     'no-console': 'off',
@@ -13,5 +14,6 @@ export default await antfu({
     'no-new': 'off',
     'unused-imports/no-unused-vars': 'warn',
     'no-eval': 'off',
+    'ts/strict-boolean-expressions': 'off',
   },
 })

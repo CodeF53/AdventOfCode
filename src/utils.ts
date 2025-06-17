@@ -11,7 +11,11 @@ export function asThreaded<I extends any[], O>(func: (...args: I) => O, funcFile
   const concurrentThis = concurrent.import(funcFile)
 
   return async function (...args: I): Promise<O> {
-    return ((await concurrentThis.load() as Record<string, Function>)[func.name])(...args) as Promise<O>
+    const loadedModule = await concurrentThis.load() as Record<string, (...args: I) => O>
+    const funcToCall = loadedModule[func.name]
+    if (typeof funcToCall !== 'function')
+      throw new TypeError(`Function ${func.name} not found in module, did you remember to export it?`)
+    return funcToCall(...args) as Promise<O>
   }
 }
 
