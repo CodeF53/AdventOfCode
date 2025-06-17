@@ -6,7 +6,7 @@ function cutInput(input: string): number[][][] {
 }
 
 // returns true if array was already valid
-function swapInvalid(pages: number[], rules: number[][]): Promise<boolean> {
+async function swapInvalid(pages: number[], rules: number[][]): Promise<boolean> {
   return new Promise((r) => {
     rules.forEach(([mustBeBefore, target]) => {
       const [indexBefore, iT] = [pages.indexOf(mustBeBefore), pages.indexOf(target)]
@@ -23,8 +23,10 @@ export async function partOne(input: string): Promise<number> {
   const [rules, updates] = cutInput(input)
 
   let total = 0
-  for (const update of updates)
-    if (await swapInvalid(update, rules)) total += update[(update.length - 1) / 2]
+  for (const update of updates) {
+    if (await swapInvalid(update, rules))
+      total += update[(update.length - 1) / 2]
+  }
 
   return total
 }

@@ -70,9 +70,9 @@ export function partTwo(input: string, isTest: boolean): number {
   // cardinal edge gardens
   const cardinalEdgeCount
     = explore({ x: startPos.x, y: width - 1 }, grid, width - 1) // N
-    + explore({ x: startPos.x, y: 0 }, grid, width - 1) // S
-    + explore({ x: 0, y: startPos.y }, grid, width - 1) // E
-    + explore({ x: width - 1, y: startPos.y }, grid, width - 1) // W
+      + explore({ x: startPos.x, y: 0 }, grid, width - 1) // S
+      + explore({ x: 0, y: startPos.y }, grid, width - 1) // E
+      + explore({ x: width - 1, y: startPos.y }, grid, width - 1) // W
   // non-cardinal edge gardens
   const smallEdgeSteps = Math.floor(width / 2) - 1
   const smallEdgeCount = (superWidth + 1) * (

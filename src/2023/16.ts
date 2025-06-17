@@ -41,12 +41,16 @@ function reflect(pos: Pos, dir: Direction): Direction[] {
       switch (dir) {
         case 'e': case 'w':
           return ['n', 's']
+        case 'n': case 's':
+          return [dir]
       }
       break
     case '-':
       switch (dir) {
         case 'n': case 's':
           return ['e', 'w']
+        case 'e': case 'w':
+          return [dir]
       }
       break
   }
@@ -87,10 +91,10 @@ export async function partTwo(input: string): Promise<number> {
   const width = input.split('\n')[0].length
   const partOneAsync = asThreaded(partOne, import.meta.url)
   const out = _.max(await Promise.all([
-    ..._.times(width, x => partOneAsync(input, { x, y: 0 }, 's')),
-    ..._.times(width, x => partOneAsync(input, { x, y: height - 1 }, 'n')),
-    ..._.times(height, y => partOneAsync(input, { x: 0, y }, 'e')),
-    ..._.times(height, y => partOneAsync(input, { x: width - 1, y }, 'w')),
+    ..._.times(width, async x => partOneAsync(input, { x, y: 0 }, 's')),
+    ..._.times(width, async x => partOneAsync(input, { x, y: height - 1 }, 'n')),
+    ..._.times(height, async y => partOneAsync(input, { x: 0, y }, 'e')),
+    ..._.times(height, async y => partOneAsync(input, { x: width - 1, y }, 'w')),
   ]))!
 
   return out

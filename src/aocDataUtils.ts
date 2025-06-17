@@ -9,7 +9,7 @@ export async function getInput(year: number, day: number): Promise<string> {
   // try to read input from cache
   const cachePath = getAbsolutePath(`./${year}/${padDay(day)}.input`)
   if (existsSync(cachePath))
-    return await readFile(cachePath, 'utf-8')
+    return readFile(cachePath, 'utf-8')
 
   // otherwise, fetch input and save it
   const input = await fetchInput(year, day)

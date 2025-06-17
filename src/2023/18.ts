@@ -24,6 +24,7 @@ function parseHexInstruction(hexCode: string): { direction: Direction, count: nu
     case '3':
       direction = 'n'
       break
+    case undefined:
     default: throw new Error(`Unexpected Direction code ${hexCode.at(-1)}`)
   }
   return { direction, count: Number.parseInt(hexCode.slice(0, -1), 16) }

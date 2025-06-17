@@ -29,10 +29,10 @@ export function partTwo(input: string): number {
     const spaceIndex = comp.search(new RegExp(`\\.{${file.length}}`))
     if (spaceIndex === -1 || spaceIndex > fileIndex) continue
     comp = comp.slice(0, spaceIndex)
-    + file
-    + comp.slice(spaceIndex + file.length, fileIndex)
-    + '.'.repeat(file.length)
-    + comp.slice(fileIndex + file.length)
+      + file
+      + comp.slice(spaceIndex + file.length, fileIndex)
+      + '.'.repeat(file.length)
+      + comp.slice(fileIndex + file.length)
     // console.log(comp)
   }
 

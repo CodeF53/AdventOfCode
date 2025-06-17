@@ -84,8 +84,9 @@ class Brick {
     // does not support any other bricks
     if (this.supporting.length === 0) return true
     // stuff would fall
-    for (const supported of this.supporting)
+    for (const supported of this.supporting) {
       if (supported.supportedBy.length === 1) return false
+    }
     // stuff would still be supported by something else
     return true
   }
@@ -134,5 +135,5 @@ export function partOne(input: string): number {
 
 export function partTwo(input: string): number {
   parseInput(input)
-  return _.sumBy(Brick.all, b => b.chainReaction().length)!
+  return _.sumBy(Brick.all, b => b.chainReaction().length)
 }

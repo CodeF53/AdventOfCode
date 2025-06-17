@@ -38,7 +38,7 @@ class Monkey {
     const detailLines = details.split('\n').slice(1).map(line => line.split(': ', 2)[1])
 
     this.items = detailLines[0].split(', ').map(Number)
-    // eslint-disable-next-line no-eval, ts/no-unsafe-assignment
+    // eslint-disable-next-line ts/no-unsafe-assignment
     this.operation = eval(`(old)=>${detailLines[1].split('= ')[1]}`)
     this.testNum = Number(detailLines[2].split('by ')[1])
     this.trueIndex = Number(detailLines[3].split('monkey ')[1])

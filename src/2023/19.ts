@@ -6,7 +6,7 @@ type Category = typeof categories[number]
 type Part = Record<Category, number>
 type Operation = '>' | '<'
 interface Rule {
-  condition(part: Part): boolean
+  condition: (part: Part) => boolean
   category?: Category
   operation?: Operation
   compareNum?: number

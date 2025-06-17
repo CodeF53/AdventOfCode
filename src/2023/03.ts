@@ -7,12 +7,12 @@ interface location {
   match: string
 }
 
-const symbolRegex = /[^\d\.]/g
+const symbolRegex = /[^\d.]/g
 const partRegex = /\b\d{1,3}\b/g
 function findRegexMatches(line: string, regex: RegExp, lineNumber: number): location[] {
   return [...line.matchAll(regex)].map(match => ({
     line: lineNumber,
-    index: match.index!,
+    index: match.index,
     match: match[0],
   }))
 }

@@ -18,8 +18,7 @@ function findPeaksAndTrails(startPos: Pos, grid: number[][]): { peaks: Set<strin
     if (grid[newPos.y][newPos.x] === posHeight + 1) {
       const a = findPeaksAndTrails(newPos, grid)
       trails += a.trails
-      // eslint-disable-next-line ts/no-unsafe-call
-      peaks = peaks.union(a.peaks) as Set<string>
+      peaks = peaks.union(a.peaks)
     }
   }
   return { peaks, trails }

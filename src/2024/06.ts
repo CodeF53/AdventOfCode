@@ -58,7 +58,7 @@ export async function partTwo(input: string): Promise<number> {
   const guardPos: Pos = findGuardPos(grid)
   const obstructionTestThreaded = asThreaded(obstructionTest, import.meta.url)
 
-  return _.sum(await Promise.all([...marchGuard(obstructionGrid, guardPos).positions].map((position) => {
+  return _.sum(await Promise.all([...marchGuard(obstructionGrid, guardPos).positions].map(async (position) => {
     return obstructionTestThreaded(position, guardPos, obstructionGrid).then(a => a ? 1 : 0)
   })))
 }
