@@ -15,5 +15,8 @@ export default await antfu({
     'unused-imports/no-unused-vars': 'warn',
     'no-eval': 'off',
     'ts/strict-boolean-expressions': 'off',
+    // let me use labeled statements (genuinely useful, see 2020 09)
+    'no-restricted-syntax': 'off',
+    'no-labels': 'off',
   },
 })
