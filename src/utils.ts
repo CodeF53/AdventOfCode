@@ -74,10 +74,10 @@ export function offsetPos(origin: Pos, dir: DirDiag, amount: number = 1): Pos {
     case 's': return { x: origin.x, y: origin.y + amount }
     case 'e': return { x: origin.x + amount, y: origin.y }
     case 'w': return { x: origin.x - amount, y: origin.y }
-    case 'ul': return { x: origin.x - 1, y: origin.y - 1 }
-    case 'ur': return { x: origin.x + 1, y: origin.y - 1 }
-    case 'll': return { x: origin.x - 1, y: origin.y + 1 }
-    case 'lr': return { x: origin.x + 1, y: origin.y + 1 }
+    case 'ul': return { x: origin.x - amount, y: origin.y - amount }
+    case 'ur': return { x: origin.x + amount, y: origin.y - amount }
+    case 'll': return { x: origin.x - amount, y: origin.y + amount }
+    case 'lr': return { x: origin.x + amount, y: origin.y + amount }
   }
 }
 
