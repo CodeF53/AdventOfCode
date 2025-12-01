@@ -1,0 +1,22 @@
+{
+  // "lsp": {
+  //   "ruby-lsp": {
+  //     "settings": {
+  //       "use_bundler": false
+  //     }
+  //   }
+  // },
+  "languages": {
+    "Ruby": {
+      "language_servers": ["solargraph", "!ruby-lsp", "!rubocop", "!sorbet"]
+    }
+  },
+  "lsp": {
+    "solargraph": {
+      "initialization_options": {
+        "diagnostics": true,
+        "formatting": true
+      }
+    }
+  }
+}
