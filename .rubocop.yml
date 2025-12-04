@@ -1,4 +1,10 @@
 Style/FrozenStringLiteralComment:
   Enabled: false
+Naming/MethodParameterName:
+   MinNameLength: 0
+Metrics/MethodLength:
+   Enabled: false
+Metrics/CyclomaticComplexity: 
+  Enabled: false
 AllCops:
   NewCops: enable
